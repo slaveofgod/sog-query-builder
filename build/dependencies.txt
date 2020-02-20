@@ -1,0 +1,3 @@
+../node_modules/sog-validator/build/output/sog-validator.js
+../src/core/core.js
+../src/framework/application.js

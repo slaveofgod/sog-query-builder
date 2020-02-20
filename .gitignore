@@ -1,0 +1,9 @@
+*.DS_Store
+/build/_tmp
+node_modules/
+.idea/
+npm-debug.log
+.java-version
+release.py
+package-lock.json
+/v1.4.4
