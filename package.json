@@ -68,7 +68,7 @@
     "build": "cd build && node build.js -o output/sog-query-builder.js",
     "build:debug": "cd build && node build.js -d -o output/sog-query-builder.dbg.js",
     "build:profiler": "cd build && node build.js -p -o output/sog-query-builder.prf.js",
-    "build:min": "cd build && node build.js -l 1 -o output/sog-query-builder.min.js",
+    "build:min": "cd build && node build.js -l 0 -o output/sog-query-builder.min.js",
     "build:all": "npm run build && npm run build:debug && npm run build:profiler && npm run build:min",
     "docs": "jsdoc -c conf-api.json",
     "serve": "npm run build; ./node_modules/.bin/http-server build/output -a localhost -p 51000",

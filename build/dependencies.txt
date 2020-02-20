@@ -1,3 +1,4 @@
-../node_modules/sog-validator/build/output/sog-validator.js
 ../src/core/core.js
+../src/core/abstract-theme.js
 ../src/framework/application.js
+../src/framework/theme/material-theme.js

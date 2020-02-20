@@ -1,5 +1,5 @@
 /*
- * SOG Query Builder Library v0.0.1 revision c96e6bb
+ * SOG Query Builder Library v0.0.1 revision c96e6bb (PROFILER)
  * Copyright 2019-2020 Slave of God <iamtheslaveofgod@gmail.com>. All rights reserved.
  */
 ;(function (root, factory) {
