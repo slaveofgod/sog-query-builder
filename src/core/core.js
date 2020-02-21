@@ -93,6 +93,18 @@ var sogqb = {
 
     /**
      * @function
+     * @name sogqb.makeScheme
+     * @description
+     * <p>Create object of the scheme.</p>
+     * @param {String} scheme Scheme settings.
+     * @returns {Object} The object of scheme.
+     */
+    makeScheme: function (scheme) {
+        return new sogqb.Scheme(scheme);
+    },
+
+    /**
+     * @function
      * @name sogqb.validateContainer
      * @param {String} container Container.
      * @description
@@ -132,34 +144,16 @@ var sogqb = {
     /**
      * @todo Needs to be implemented.
      * @function
-     * @name sogqb.validateScheme
-     * @param {Object} scheme Scheme object.
+     * @name sogqb.validateState
+     * @param {Object} state Query builder state.
      * @param {Object} rules=null Additional validation rules.
      * @description
-     * <p>Validate scheme.</p>
+     * <p>Validate query builder state.</p>
      * @exception
      * <p>The validation error message.</p>
      * @returns {Boolean}
      */
-    validateScheme: function (scheme, rules) {
-
-    },
-
-    /**
-     * @todo Needs to be implemented.
-     * @function
-     * @name sogqb.validateSettings
-     * @param {Object} settings Query builder settings.
-     * @param {Object} rules=null Additional validation rules.
-     * @description
-     * <p>Validate query builder settings.</p>
-     * @exception
-     * <p>The validation error message.</p>
-     * @returns {Boolean}
-     */
-    validateSettings: function (settings, rules) {
-
-    }
+    validateState: function (state, rules) { }
 };
 
 if (typeof exports !== 'undefined')

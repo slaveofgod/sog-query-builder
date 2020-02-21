@@ -68,6 +68,8 @@
             
             <span class="subtitle">Methods</span>
             
+                <li class="parent  " data-name="sogqb.makeScheme"><a href="sogqb.html#.makeScheme">makeScheme</a></li>
+            
                 <li class="parent  " data-name="sogqb.makeTheme"><a href="sogqb.html#.makeTheme">makeTheme</a></li>
             
                 <li class="parent  " data-name="sogqb.registerTheme"><a href="sogqb.html#.registerTheme">registerTheme</a></li>
@@ -76,9 +78,7 @@
             
                 <li class="parent  " data-name="sogqb.validateEntity"><a href="sogqb.html#.validateEntity">validateEntity</a></li>
             
-                <li class="parent  " data-name="sogqb.validateScheme"><a href="sogqb.html#.validateScheme">validateScheme</a></li>
-            
-                <li class="parent  " data-name="sogqb.validateSettings"><a href="sogqb.html#.validateSettings">validateSettings</a></li>
+                <li class="parent  " data-name="sogqb.validateState"><a href="sogqb.html#.validateState">validateState</a></li>
             
             </ul>
             
@@ -150,7 +150,7 @@
             
                 <li class="parent  " data-name="sogqb.Application#setScheme"><a href="sogqb.Application.html#setScheme">setScheme</a></li>
             
-                <li class="parent  " data-name="sogqb.Application#setSettings"><a href="sogqb.Application.html#setSettings">setSettings</a></li>
+                <li class="parent  " data-name="sogqb.Application#setState"><a href="sogqb.Application.html#setState">setState</a></li>
             
                 <li class="parent  " data-name="sogqb.Application#setTheme"><a href="sogqb.Application.html#setTheme">setTheme</a></li>
             
@@ -193,6 +193,36 @@
             <span class="subtitle">Methods</span>
             
                 <li class="  " data-name="sogqb.MaterialTheme#draw"><a href="sogqb.MaterialTheme.html#draw">draw</a></li>
+            
+            </ul>
+            
+            <ul class="events itemMembers">
+            
+            </ul>
+            
+        </li>
+    
+        <li class="item" data-name="sogqb.Scheme">
+            <span class="title  ">
+                
+                
+                    <a href="sogqb.Scheme.html">sogqb.Scheme</a>
+                
+            </span>
+            
+            <ul class="members itemMembers">
+            
+            </ul>
+            
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            
+            <ul class="methods itemMembers">
             
             </ul>
             
@@ -280,6 +310,9 @@
         
             <dt class=""><a href="sogqb.MaterialTheme.html">MaterialTheme</a></dt>
             
+        
+            <dt class=""><a href="sogqb.Scheme.html">Scheme</a></dt>
+            
         </dl>
     
     
@@ -291,6 +324,152 @@
         <h3 class="subsection-title">Methods</h3>
         
         <dl class="list-methods">
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".makeScheme">
+            <a class="share-icon" href="#.makeScheme"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                sogqb.makeScheme
+            </span>
+            <span class="signature">(scheme)</span><span class="type-signature">Object</span>
+            
+            <span class="access-signature">static</span>
+            
+            
+        </h4>
+    
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Create object of the scheme.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>scheme</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                Scheme settings.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        Object
+                        
+                    
+            </td>
+            <td class="description last">The object of scheme.</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
             
 <dt>
     <div class="nameContainer">
@@ -942,12 +1121,12 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".validateScheme">
-            <a class="share-icon" href="#.validateScheme"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id=".validateState">
+            <a class="share-icon" href="#.validateState"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                sogqb.validateScheme
+                sogqb.validateState
             </span>
-            <span class="signature">(scheme, rules)</span><span class="type-signature">Boolean</span>
+            <span class="signature">(state, rules)</span><span class="type-signature">Boolean</span>
             
             <span class="access-signature">static</span>
             
@@ -963,7 +1142,7 @@
     
     
     <div class="description">
-        <p>Validate scheme.</p>
+        <p>Validate query builder state.</p>
     </div>
     
 
@@ -996,7 +1175,7 @@
 	
         <tr>
             
-                <td class="name"><code>scheme</code></td>
+                <td class="name"><code>state</code></td>
             
             
             <td class="type">
@@ -1016,207 +1195,7 @@
             
             <td class="description last">
                 
-                Scheme object.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>rules</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    null
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                Additional validation rules.</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-todo">TODO</dt>
-    <dd class="tag-todo">
-        <ul>
-            <li>Needs to be implemented.</li>
-        </ul>
-    </dd>
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    <h5>Throws:</h5>
-    
-            
-
-    <div class="param-desc">
-    
-        <p>The validation error message.</p>
-    
-    </div>
-
-
-        
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        Boolean
-                        
-                    
-            </td>
-            <td class="description last"></td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".validateSettings">
-            <a class="share-icon" href="#.validateSettings"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                sogqb.validateSettings
-            </span>
-            <span class="signature">(settings, rules)</span><span class="type-signature">Boolean</span>
-            
-            <span class="access-signature">static</span>
-            
-            
-        </h4>
-    
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Validate query builder settings.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		<th>Default</th>
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>settings</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                Query builder settings.</td>
+                Query builder state.</td>
         </tr>
 	
 	
@@ -1358,7 +1337,7 @@
 
         <footer class="content-size">
             <div class="footer">
-                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Thu Feb 20 2020 22:34:59 GMT+0200 (Eastern European Standard Time)
+                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Feb 21 2020 22:17:38 GMT+0200 (Eastern European Standard Time)
             </div>
         </footer>
     </div>

@@ -1,5 +1,5 @@
 /*
- * SOG Query Builder Library v0.0.1 revision c96e6bb
+ * SOG Query Builder Library v0.0.1 revision a6ace94
  * Copyright 2019-2020 Slave of God <iamtheslaveofgod@gmail.com>. All rights reserved.
  */
 ;(function (root, factory) {
@@ -20,7 +20,7 @@ var _typeLookup = function() {
   }
   return result;
 }();
-var sogqb = {version:"0.0.1", revision:"c96e6bb", config:{}, common:{}, themes:{}, registerTheme:function(theme) {
+var sogqb = {version:"0.0.1", revision:"a6ace94", config:{}, common:{}, themes:{}, registerTheme:function(theme) {
   var __t = [theme];
   var __theme = new __t[0]({}, {}, true);
   var alias = __theme.alias;
@@ -49,6 +49,8 @@ var sogqb = {version:"0.0.1", revision:"c96e6bb", config:{}, common:{}, themes:{
     throw new Error('Theme with alias "' + theme + '" is not registered.');
   }
   return new sogqb.themes[theme](options, optionRules, internal);
+}, makeScheme:function(scheme) {
+  return new sogqb.Scheme(scheme);
 }, validateContainer:function(container) {
   var message = sogv.isValidWithErrorMessage(container, "required|string|length:5,255");
   if (null !== message) {
@@ -61,8 +63,7 @@ var sogqb = {version:"0.0.1", revision:"c96e6bb", config:{}, common:{}, themes:{
     throw new Error("Entity: " + message);
   }
   return true;
-}, validateScheme:function(scheme, rules) {
-}, validateSettings:function(settings, rules) {
+}, validateState:function(state, rules) {
 }};
 if (typeof exports !== "undefined") {
   exports.sogqb = sogqb;
@@ -161,17 +162,66 @@ if (typeof exports !== "undefined") {
   return {AbstractTheme:AbstractTheme};
 }());
 Object.assign(sogqb, function() {
-  var Application = function(container, entity, scheme, settings, theme) {
+  var Scheme = function(scheme) {
+    this.__scheme = scheme || null;
+    if (null !== this.__scheme) {
+      this.__validate();
+    }
+    this.name = "Scheme";
+  };
+  Scheme.prototype.constructor = Scheme;
+  Object.defineProperties(Scheme.prototype, {"scheme":{get:function() {
+    return this.__scheme;
+  }}});
+  Object.assign(Scheme.prototype, {__validate:function() {
+    for (var i = 0; i < this.__scheme.length; i++) {
+      this.__validateEntity(this.__scheme[i].entity);
+      this.__validateColumns(this.__scheme[i].columns);
+    }
+    return true;
+  }, __validateEntity:function(entity) {
+    var message = sogv.isValidWithErrorMessage(entity, "required|string|alpha-dash|length:2,50");
+    if (null !== message) {
+      throw new Error("Entity: [" + entity + "] " + message);
+    }
+    return true;
+  }, __validateColumns:function(columns) {
+    var message = sogv.isValidWithErrorMessage(columns, "required|array|between:1,1000");
+    if (null !== message) {
+      throw new Error("Columns: " + message);
+    }
+    columns.forEach(function(element) {
+      var validationEngine = new sogv.Application({lang:"en"});
+      var data = {name:element.name, title:element.title, type:element.type, data:element.data};
+      var rules = {name:"required|string|alpha-dash|length:2,50", title:"required|string|print|length:2,100", type:"required|in:email;integer;numeric;string;date", data:"object"};
+      var form = validationEngine.make(data, rules);
+      if (false === form.isValid()) {
+        for (var key in data) {
+          if (!data.hasOwnProperty(key)) {
+            continue;
+          }
+          if (false === form.get(key).isValid()) {
+            throw new Error("Column '" + key + "' = '" + data[key] + "': " + form.get(key).errors().first());
+          }
+        }
+      }
+    });
+    return true;
+  }});
+  return {Scheme:Scheme};
+}());
+Object.assign(sogqb, function() {
+  var Application = function(container, entity, scheme, state, theme) {
     this.__container = container || null;
     this.__entity = entity || null;
     this.__scheme = scheme || null;
-    this.__settings = settings || null;
+    this.__state = state || null;
     this.__theme = theme || "material";
     sogqb.validateContainer(this.__container);
     sogqb.validateEntity(this.__entity);
-    sogqb.validateScheme(this.__scheme);
-    sogqb.validateSettings(this.__settings);
+    sogqb.validateState(this.__state);
     var __this = this;
+    this.setScheme(this.__scheme);
     this.setTheme(this.__theme);
     this.name = "Application";
     window.addEventListener("resize", function() {
@@ -185,17 +235,16 @@ Object.assign(sogqb, function() {
     return this.__entity;
   }}, "scheme":{get:function() {
     return this.__scheme;
-  }}, "settings":{get:function() {
-    return this.__settings;
+  }}, "state":{get:function() {
+    return this.__state;
   }}, "theme":{get:function() {
     return this.__theme;
   }}});
   Object.assign(Application.prototype, {setScheme:function(scheme) {
-    sogqb.validateScheme(scheme, "required");
-    this.__scheme = scheme;
-  }, setSettings:function(settings) {
-    sogqb.validateSettings(settings, "required");
-    this.__settings = settings;
+    this.__scheme = sogqb.makeScheme(scheme);
+  }, setState:function(state) {
+    sogqb.validateState(state, "required");
+    this.__state = state;
   }, setTheme:function(theme) {
     this.__theme = sogqb.makeTheme(theme, {container:this.container}, {});
   }, draw:function() {

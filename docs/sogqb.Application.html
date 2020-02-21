@@ -68,6 +68,8 @@
             
             <span class="subtitle">Methods</span>
             
+                <li class="parent  " data-name="sogqb.makeScheme"><a href="sogqb.html#.makeScheme">makeScheme</a></li>
+            
                 <li class="parent  " data-name="sogqb.makeTheme"><a href="sogqb.html#.makeTheme">makeTheme</a></li>
             
                 <li class="parent  " data-name="sogqb.registerTheme"><a href="sogqb.html#.registerTheme">registerTheme</a></li>
@@ -76,9 +78,7 @@
             
                 <li class="parent  " data-name="sogqb.validateEntity"><a href="sogqb.html#.validateEntity">validateEntity</a></li>
             
-                <li class="parent  " data-name="sogqb.validateScheme"><a href="sogqb.html#.validateScheme">validateScheme</a></li>
-            
-                <li class="parent  " data-name="sogqb.validateSettings"><a href="sogqb.html#.validateSettings">validateSettings</a></li>
+                <li class="parent  " data-name="sogqb.validateState"><a href="sogqb.html#.validateState">validateState</a></li>
             
             </ul>
             
@@ -150,7 +150,7 @@
             
                 <li class="parent  " data-name="sogqb.Application#setScheme"><a href="sogqb.Application.html#setScheme">setScheme</a></li>
             
-                <li class="parent  " data-name="sogqb.Application#setSettings"><a href="sogqb.Application.html#setSettings">setSettings</a></li>
+                <li class="parent  " data-name="sogqb.Application#setState"><a href="sogqb.Application.html#setState">setState</a></li>
             
                 <li class="parent  " data-name="sogqb.Application#setTheme"><a href="sogqb.Application.html#setTheme">setTheme</a></li>
             
@@ -202,6 +202,36 @@
             
         </li>
     
+        <li class="item" data-name="sogqb.Scheme">
+            <span class="title  ">
+                
+                
+                    <a href="sogqb.Scheme.html">sogqb.Scheme</a>
+                
+            </span>
+            
+            <ul class="members itemMembers">
+            
+            </ul>
+            
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            
+            <ul class="methods itemMembers">
+            
+            </ul>
+            
+            <ul class="events itemMembers">
+            
+            </ul>
+            
+        </li>
+    
     </ul>
 </div>
 
@@ -237,7 +267,7 @@
             <span class="">
                 new sogqb.Application
             </span>
-            <span class="signature">(container, entity, scheme, settings, theme)</span>
+            <span class="signature">(container, entity, scheme, state, theme)</span>
             
             
             
@@ -369,7 +399,7 @@
 	
         <tr>
             
-                <td class="name"><code>settings</code></td>
+                <td class="name"><code>state</code></td>
             
             
             <td class="type">
@@ -391,7 +421,7 @@
             
             <td class="description last">
                 
-                Query builder settings. If this value is null, it will be used data from url.</td>
+                Query builder state. If this value is null, it will be used data from url.</td>
         </tr>
 	
 	
@@ -519,7 +549,7 @@
     
     
     <div class="description">
-        Draw query search container.
+        <p>Draw query search container.</p>
     </div>
     
 
@@ -591,7 +621,7 @@
     
     
     <div class="description">
-        Set query scheme.
+        <p>Set query scheme.</p>
     </div>
     
 
@@ -686,37 +716,58 @@
 
     
     <pre class="prettyprint"><code>...
-queryBuilder.setScheme({
-    user: {
-        entity: 'user',
-        columns: {
-            first_name: {
-                name: 'first_name',
-                title: 'First Name',
-                type: 'string',
-                data: {
-                    1: 'Alexey',
-                    2: 'Vasili',
-                    10: 'Dmitry',
-                    16: 'Oleg',
-                    22: 'Andrew',
-                }
-            },
-            second_name: {
-                name: 'last_name',
-                title: 'Last Name',
-                type: 'string',
-                data: {
-                    1: 'Bob',
-                    2: 'Pupkin',
-                    10: 'Ivanov',
-                    16: 'Overiev',
-                    22: 'Kalinin',
-                }
+queryBuilder.setScheme([{
+    entity: 'user',
+    columns: [
+        {
+            name: 'first_name',
+            title: 'First Name',
+            type: 'string',
+            data: {
+                1: 'Alexey',
+                2: 'Vasili',
+                10: 'Dmitry',
+                16: 'Oleg',
+                22: 'Andrew',
             }
+        }, {
+            name: 'last_name',
+            title: 'Last Name',
+            type: 'string',
+            data: {
+                1: 'Bob',
+                2: 'Pupkin',
+                10: 'Ivanov',
+                16: 'Overiev',
+                22: 'Kalinin',
+            }
+        }, {
+            name: 'email',
+            title: 'Email',
+            type: 'email'
+        }, {
+            name: 'age',
+            title: 'Age',
+            type: 'integer'
+        }, {
+            name: 'country',
+            title: 'Country',
+            type: 'string'
+        }, {
+            name: 'city',
+            title: 'City',
+            type: 'string'
+        }, {
+            name: 'birthday',
+            title: 'Birthday',
+            type: 'date'
+        }, {
+            name: 'tax',
+            title: 'Tax',
+            type: 'numeric'
         }
-    }
-});</code></pre>
+    ]
+}]);</code></pre>
     
 
     
@@ -726,10 +777,10 @@ queryBuilder.setScheme({
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="setSettings">
-            <a class="share-icon" href="#setSettings"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="setState">
+            <a class="share-icon" href="#setState"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                setSettings
+                setState
             </span>
             <span class="signature">(scheme)</span>
             
@@ -747,7 +798,7 @@ queryBuilder.setScheme({
     
     
     <div class="description">
-        Set query builder settings.
+        <p>Set query builder state.</p>
     </div>
     
 
@@ -794,7 +845,7 @@ queryBuilder.setScheme({
             
             <td class="description last">
                 
-                Query builder settings.</td>
+                Query builder state.</td>
         </tr>
 	
 	
@@ -842,7 +893,7 @@ queryBuilder.setScheme({
 
     
     <pre class="prettyprint"><code>...
-queryBuilder.setSettings([
+queryBuilder.setState([
     {
         type: 'expression',
         field: 'first_name',
@@ -888,7 +939,7 @@ queryBuilder.setSettings([
     
     
     <div class="description">
-        Build theme and apply it to the application.
+        <p>Build theme and apply it to the application.</p>
     </div>
     
 
@@ -1014,7 +1065,7 @@ queryBuilder.setTheme('material');</code></pre>
     
     
     <div class="description">
-        Update query search container.
+        <p>Update query search container.</p>
     </div>
     
 
@@ -1081,7 +1132,7 @@ queryBuilder.setTheme('material');</code></pre>
 
         <footer class="content-size">
             <div class="footer">
-                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Thu Feb 20 2020 22:34:59 GMT+0200 (Eastern European Standard Time)
+                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Feb 21 2020 22:17:38 GMT+0200 (Eastern European Standard Time)
             </div>
         </footer>
     </div>

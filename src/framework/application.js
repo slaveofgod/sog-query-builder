@@ -9,7 +9,7 @@ Object.assign(sogqb, function () {
      * @param {String} container The container of query string.
      * @param {String} entity The current entity.
      * @param {Object} scheme=null The scheme of query.
-     * @param {Object} settings=null Query builder settings. If this value is null, it will be used data from url.
+     * @param {Object} state=null Query builder state. If this value is null, it will be used data from url.
      * @param {String} theme=material Theme.
      * @example
      * var queryBuilder = new sogqb.Application('user-query-builder', 'user');
@@ -17,21 +17,21 @@ Object.assign(sogqb, function () {
 
     // PROPERTIES
 
-    var Application = function (container, entity, scheme, settings, theme) {
+    var Application = function (container, entity, scheme, state, theme) {
 
         this.__container = container || null;
         this.__entity = entity || null;
         this.__scheme = scheme || null;
-        this.__settings = settings || null;
+        this.__state = state || null;
         this.__theme = theme || 'material';
 
         sogqb.validateContainer(this.__container);
         sogqb.validateEntity(this.__entity);
-        sogqb.validateScheme(this.__scheme);
-        sogqb.validateSettings(this.__settings);
+        sogqb.validateState(this.__state);
 
         var __this = this;
 
+        this.setScheme(this.__scheme);
         this.setTheme(this.__theme);
 
         this.name = 'Application';
@@ -59,9 +59,9 @@ Object.assign(sogqb, function () {
                 return this.__scheme;
             }
         },
-        'settings': {
+        'state': {
             get: function () {
-                return this.__settings;
+                return this.__state;
             }
         },
         'theme': {
@@ -75,55 +75,77 @@ Object.assign(sogqb, function () {
         /**
          * @function
          * @name sogqb.Application#setScheme
-         * @description Set query scheme.
+         * @description
+         * <p>Set query scheme.</p>
          * @param {Object} scheme The scheme of query.
          * @example
          * ...
-         * queryBuilder.setScheme({
-         *     user: {
-         *         entity: 'user',
-         *         columns: {
-         *             first_name: {
-         *                 name: 'first_name',
-         *                 title: 'First Name',
-         *                 type: 'string',
-         *                 data: {
-         *                     1: 'Alexey',
-         *                     2: 'Vasili',
-         *                     10: 'Dmitry',
-         *                     16: 'Oleg',
-         *                     22: 'Andrew',
-         *                 }
-         *             },
-         *             second_name: {
-         *                 name: 'last_name',
-         *                 title: 'Last Name',
-         *                 type: 'string',
-         *                 data: {
-         *                     1: 'Bob',
-         *                     2: 'Pupkin',
-         *                     10: 'Ivanov',
-         *                     16: 'Overiev',
-         *                     22: 'Kalinin',
-         *                 }
+         * queryBuilder.setScheme([{
+         *     entity: 'user',
+         *     columns: [
+         *         {
+         *             name: 'first_name',
+         *             title: 'First Name',
+         *             type: 'string',
+         *             data: {
+         *                 1: 'Alexey',
+         *                 2: 'Vasili',
+         *                 10: 'Dmitry',
+         *                 16: 'Oleg',
+         *                 22: 'Andrew',
          *             }
+         *         }, {
+         *             name: 'last_name',
+         *             title: 'Last Name',
+         *             type: 'string',
+         *             data: {
+         *                 1: 'Bob',
+         *                 2: 'Pupkin',
+         *                 10: 'Ivanov',
+         *                 16: 'Overiev',
+         *                 22: 'Kalinin',
+         *             }
+         *         }, {
+         *             name: 'email',
+         *             title: 'Email',
+         *             type: 'email'
+         *         }, {
+         *             name: 'age',
+         *             title: 'Age',
+         *             type: 'integer'
+         *         }, {
+         *             name: 'country',
+         *             title: 'Country',
+         *             type: 'string'
+         *         }, {
+         *             name: 'city',
+         *             title: 'City',
+         *             type: 'string'
+         *         }, {
+         *             name: 'birthday',
+         *             title: 'Birthday',
+         *             type: 'date'
+         *         }, {
+         *             name: 'tax',
+         *             title: 'Tax',
+         *             type: 'numeric'
          *         }
-         *     }
-         * });
+         *     ]
+         * }]);
          */
         setScheme: function (scheme) {
-            sogqb.validateScheme(scheme, 'required');
-            this.__scheme = scheme;
+            this.__scheme = sogqb.makeScheme(scheme);
         },
 
         /**
          * @function
-         * @name sogqb.Application#setSettings
-         * @description Set query builder settings.
-         * @param {Object} scheme Query builder settings.
+         * @name sogqb.Application#setState
+         * @description
+         * <p>Set query builder state.</p>
+         * @param {Object} scheme Query builder state.
          * @example
          * ...
-         * queryBuilder.setSettings([
+         * queryBuilder.setState([
          *     {
          *         type: 'expression',
          *         field: 'first_name',
@@ -140,15 +162,16 @@ Object.assign(sogqb, function () {
          *     }
          * ]);
          */
-        setSettings: function (settings) {
-            sogqb.validateSettings(settings, 'required');
-            this.__settings = settings;
+        setState: function (state) {
+            sogqb.validateState(state, 'required');
+            this.__state = state;
         },
 
         /**
          * @function
          * @name sogqb.Application#setTheme
-         * @description Build theme and apply it to the application.
+         * @description
+         * <p>Build theme and apply it to the application.</p>
          * @param {Object} theme Theme name.
          * @example
          * ...
@@ -163,16 +186,21 @@ Object.assign(sogqb, function () {
         /**
          * @function
          * @name sogqb.Application#draw
-         * @description Draw query search container.
+         * @description
+         * <p>Draw query search container.</p>
          */
         draw: function () {
             this.__theme.draw();
+            /**
+             * @todo Check that scheme is defined.
+             */
         },
 
         /**
          * @function
          * @name sogqb.Application#update
-         * @description Update query search container.
+         * @description
+         * <p>Update query search container.</p>
          */
         update: function () {
             this.__theme.update();
