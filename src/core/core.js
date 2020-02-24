@@ -105,6 +105,19 @@ var sogqb = {
 
     /**
      * @function
+     * @name sogqb.makeState
+     * @description
+     * <p>Create object of the state.</p>
+     * @param {Object} state Query builder state.
+     * @param {Object} scheme Query builder scheme.
+     * @returns {Object} The object of theme.
+     */
+    makeState: function (state, scheme) {
+        return new sogqb.State(state, scheme);
+    },
+
+    /**
+     * @function
      * @name sogqb.validateContainer
      * @param {String} container Container.
      * @description
@@ -139,21 +152,7 @@ var sogqb = {
         }
 
         return true;
-    },
-
-    /**
-     * @todo Needs to be implemented.
-     * @function
-     * @name sogqb.validateState
-     * @param {Object} state Query builder state.
-     * @param {Object} rules=null Additional validation rules.
-     * @description
-     * <p>Validate query builder state.</p>
-     * @exception
-     * <p>The validation error message.</p>
-     * @returns {Boolean}
-     */
-    validateState: function (state, rules) { }
+    }
 };
 
 if (typeof exports !== 'undefined')

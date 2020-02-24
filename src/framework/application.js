@@ -19,6 +19,8 @@ Object.assign(sogqb, function () {
 
     var Application = function (container, entity, scheme, state, theme) {
 
+        var __this = this;
+
         this.__container = container || null;
         this.__entity = entity || null;
         this.__scheme = scheme || null;
@@ -27,12 +29,10 @@ Object.assign(sogqb, function () {
 
         sogqb.validateContainer(this.__container);
         sogqb.validateEntity(this.__entity);
-        sogqb.validateState(this.__state);
-
-        var __this = this;
 
         this.setScheme(this.__scheme);
         this.setTheme(this.__theme);
+        this.setState(this.__state, this.__scheme);
 
         this.name = 'Application';
 
@@ -87,24 +87,46 @@ Object.assign(sogqb, function () {
          *             name: 'first_name',
          *             title: 'First Name',
          *             type: 'string',
-         *             data: {
-         *                 1: 'Alexey',
-         *                 2: 'Vasili',
-         *                 10: 'Dmitry',
-         *                 16: 'Oleg',
-         *                 22: 'Andrew',
-         *             }
+         *             data: [
+         *                 {
+         *                     id: 1,
+         *                     label: 'Alexey'
+         *                 }, {
+         *                     id: 2,
+         *                     label: 'Vasili'
+         *                 }, {
+         *                     id: 10,
+         *                     label: 'Dmitry'
+         *                 }, {
+         *                     id: 16,
+         *                     label: 'Oleg'
+         *                 }, {
+         *                     id: 22,
+         *                     label: 'Andrew'
+         *                 }
+         *             ]
          *         }, {
          *             name: 'last_name',
          *             title: 'Last Name',
          *             type: 'string',
-         *             data: {
-         *                 1: 'Bob',
-         *                 2: 'Pupkin',
-         *                 10: 'Ivanov',
-         *                 16: 'Overiev',
-         *                 22: 'Kalinin',
-         *             }
+         *             data: [
+         *                 {
+         *                     id: 1,
+         *                     label: 'Bob'
+         *                 }, {
+         *                     id: 2,
+         *                     label: 'Pupkin'
+         *                 }, {
+         *                     id: 10,
+         *                     label: 'Ivanov'
+         *                 }, {
+         *                     id: 16,
+         *                     label: 'Overiev'
+         *                 }, {
+         *                     id: 22,
+         *                     label: 'Kalinin'
+         *                 }
+         *             ]
          *         }, {
          *             name: 'email',
          *             title: 'Email',
@@ -142,29 +164,35 @@ Object.assign(sogqb, function () {
          * @name sogqb.Application#setState
          * @description
          * <p>Set query builder state.</p>
-         * @param {Object} scheme Query builder state.
+         * @param {Object} state Query builder state.
+         * @param {Object} scheme Query builder scheme.
          * @example
          * ...
          * queryBuilder.setState([
          *     {
          *         type: 'expression',
-         *         field: 'first_name',
-         *         value: 1,
-         *         operator: 'like'
+         *         field: 'user.first_name',
+         *         label: 'Alexey',
+         *         value: 'id:1',
+         *         operator: 'equal'
          *     }, {
-         *         type: 'expression',
+         *         type: 'conjunction',
          *         operator: 'and'
          *     }, {
          *         type: 'expression',
-         *         field: 'last_name',
-         *         value: 1,
-         *         operator: 'like'
+         *         field: 'user.last_name',
+         *         label: 'Bob',
+         *         value: 'id:1',
+         *         operator: 'equal'
          *     }
-         * ]);
+         * ], scheme);
          */
-        setState: function (state) {
-            sogqb.validateState(state, 'required');
-            this.__state = state;
+        setState: function (state, scheme) {
+            if ('undefined' !== typeof state) {
+                scheme = this.__state;
+            }
+
+            this.__state = sogqb.makeState(state, scheme);
         },
 
         /**

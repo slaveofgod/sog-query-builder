@@ -15,24 +15,46 @@ Object.assign(sogqb, function () {
      *             name: 'first_name',
      *             title: 'First Name',
      *             type: 'string',
-     *             data: {
-     *                 1: 'Alexey',
-     *                 2: 'Vasili',
-     *                 10: 'Dmitry',
-     *                 16: 'Oleg',
-     *                 22: 'Andrew',
-     *             }
+     *             data: [
+     *                 {
+     *                     id: 1,
+     *                     label: 'Alexey'
+     *                 }, {
+     *                     id: 2,
+     *                     label: 'Vasili'
+     *                 }, {
+     *                     id: 10,
+     *                     label: 'Dmitry'
+     *                 }, {
+     *                     id: 16,
+     *                     label: 'Oleg'
+     *                 }, {
+     *                     id: 22,
+     *                     label: 'Andrew'
+     *                 }
+     *             ]
      *         }, {
      *             name: 'last_name',
      *             title: 'Last Name',
      *             type: 'string',
-     *             data: {
-     *                 1: 'Bob',
-     *                 2: 'Pupkin',
-     *                 10: 'Ivanov',
-     *                 16: 'Overiev',
-     *                 22: 'Kalinin',
-     *             }
+     *             data: [
+     *                 {
+     *                     id: 1,
+     *                     label: 'Bob'
+     *                 }, {
+     *                     id: 2,
+     *                     label: 'Pupkin'
+     *                 }, {
+     *                     id: 10,
+     *                     label: 'Ivanov'
+     *                 }, {
+     *                     id: 16,
+     *                     label: 'Overiev'
+     *                 }, {
+     *                     id: 22,
+     *                     label: 'Kalinin'
+     *                 }
+     *             ]
      *         }, {
      *             name: 'email',
      *             title: 'Email',
@@ -155,7 +177,10 @@ Object.assign(sogqb, function () {
                     name: 'required|string|alpha-dash|length:2,50',
                     title: 'required|string|print|length:2,100',
                     type: 'required|in:email;integer;numeric;string;date',
-                    data: 'object'
+                    /**
+                     * @todo Add deeper checking and [data: function] or [data: url]
+                     */
+                    data: 'array'
                 };
 
                 var form = validationEngine.make(data, rules);

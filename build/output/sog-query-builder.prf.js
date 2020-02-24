@@ -1,5 +1,5 @@
 /*
- * SOG Query Builder Library v0.0.1 revision a6ace94 (PROFILER)
+ * SOG Query Builder Library v0.0.1 revision 2eb4eff (PROFILER)
  * Copyright 2019-2020 Slave of God <iamtheslaveofgod@gmail.com>. All rights reserved.
  */
 ;(function (root, factory) {
@@ -20,7 +20,7 @@ var _typeLookup = function() {
   }
   return result;
 }();
-var sogqb = {version:"0.0.1", revision:"a6ace94", config:{}, common:{}, themes:{}, registerTheme:function(theme) {
+var sogqb = {version:"0.0.1", revision:"2eb4eff", config:{}, common:{}, themes:{}, registerTheme:function(theme) {
   var __t = [theme];
   var __theme = new __t[0]({}, {}, true);
   var alias = __theme.alias;
@@ -51,6 +51,8 @@ var sogqb = {version:"0.0.1", revision:"a6ace94", config:{}, common:{}, themes:{
   return new sogqb.themes[theme](options, optionRules, internal);
 }, makeScheme:function(scheme) {
   return new sogqb.Scheme(scheme);
+}, makeState:function(state, scheme) {
+  return new sogqb.State(state, scheme);
 }, validateContainer:function(container) {
   var message = sogv.isValidWithErrorMessage(container, "required|string|length:5,255");
   if (null !== message) {
@@ -63,7 +65,6 @@ var sogqb = {version:"0.0.1", revision:"a6ace94", config:{}, common:{}, themes:{
     throw new Error("Entity: " + message);
   }
   return true;
-}, validateState:function(state, rules) {
 }};
 if (typeof exports !== "undefined") {
   exports.sogqb = sogqb;
@@ -193,7 +194,7 @@ Object.assign(sogqb, function() {
     columns.forEach(function(element) {
       var validationEngine = new sogv.Application({lang:"en"});
       var data = {name:element.name, title:element.title, type:element.type, data:element.data};
-      var rules = {name:"required|string|alpha-dash|length:2,50", title:"required|string|print|length:2,100", type:"required|in:email;integer;numeric;string;date", data:"object"};
+      var rules = {name:"required|string|alpha-dash|length:2,50", title:"required|string|print|length:2,100", type:"required|in:email;integer;numeric;string;date", data:"array"};
       var form = validationEngine.make(data, rules);
       if (false === form.isValid()) {
         for (var key in data) {
@@ -211,7 +212,30 @@ Object.assign(sogqb, function() {
   return {Scheme:Scheme};
 }());
 Object.assign(sogqb, function() {
+  var State = function(state, scheme) {
+    this.__state = state || null;
+    this.__scheme = scheme || null;
+    if (null !== this.__state) {
+      this.__validate();
+    }
+    this.name = "State";
+  };
+  State.prototype.constructor = State;
+  Object.defineProperties(State.prototype, {"state":{get:function() {
+    return this.__state;
+  }}});
+  Object.assign(State.prototype, {__validate:function() {
+    if ("Scheme" !== this.__scheme) {
+      throw new Error("Invalid query builder scheme");
+    }
+    console.log(this.__state);
+    return true;
+  }});
+  return {State:State};
+}());
+Object.assign(sogqb, function() {
   var Application = function(container, entity, scheme, state, theme) {
+    var __this = this;
     this.__container = container || null;
     this.__entity = entity || null;
     this.__scheme = scheme || null;
@@ -219,10 +243,9 @@ Object.assign(sogqb, function() {
     this.__theme = theme || "material";
     sogqb.validateContainer(this.__container);
     sogqb.validateEntity(this.__entity);
-    sogqb.validateState(this.__state);
-    var __this = this;
     this.setScheme(this.__scheme);
     this.setTheme(this.__theme);
+    this.setState(this.__state, this.__scheme);
     this.name = "Application";
     window.addEventListener("resize", function() {
       __this.update();
@@ -242,9 +265,11 @@ Object.assign(sogqb, function() {
   }}});
   Object.assign(Application.prototype, {setScheme:function(scheme) {
     this.__scheme = sogqb.makeScheme(scheme);
-  }, setState:function(state) {
-    sogqb.validateState(state, "required");
-    this.__state = state;
+  }, setState:function(state, scheme) {
+    if ("undefined" !== typeof state) {
+      scheme = this.__state;
+    }
+    this.__state = sogqb.makeState(state, scheme);
   }, setTheme:function(theme) {
     this.__theme = sogqb.makeTheme(theme, {container:this.container}, {});
   }, draw:function() {
