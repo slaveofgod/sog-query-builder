@@ -42,19 +42,15 @@ Object.assign(sogqb, (function () {
             this.__afterDraw();
         },
 
+        /**
+         * @function
+         * @name sogqb.AbstractTheme#update
+         * @description
+         * <p>Update query search container.</p>
+         */
         update: function () {
-            console.info('Updating this container with the id "' + this.container + '" ...');
-
-            var container = document.getElementById(this.container);
-            var queryWidth = container.clientWidth - 10;
-            container.childNodes.forEach(function (element) {
-                if (false === element.classList.contains('query')) {
-                    queryWidth -= element.clientWidth;
-                }
-            });
-
-            var queryElement = container.querySelector('.query');
-            queryElement.style.width = queryWidth + 'px';
+            this.__destroy();
+            this.draw();
         },
 
         /**
@@ -95,6 +91,17 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
+         * @name sogqb.AbstractTheme#__destroy
+         * @description
+         * <p>Destroy query search container.</p>
+         */
+        __destroy: function () {
+            document.getElementById(this.container).innerHTML = '';
+        },
+
+        /**
+         * @private
+         * @function
          * @name sogqb.AbstractTheme#__validateOptions
          * @description
          * <p>Validate options.</p>
@@ -108,10 +115,7 @@ Object.assign(sogqb, (function () {
             for (var key in rules) {
                 if (!rules.hasOwnProperty(key)) continue;
 
-                var message = sogv.isValidWithErrorMessage(this.__options[key], rules[key], true);
-                if (null !== message) {
-                    throw new Error("[option:" + key + "]: " +  message);
-                }
+                sogqb.isValidException("[option: " + key + "]", this.__options[key], rules[key]);
             }
         },
 
@@ -121,6 +125,7 @@ Object.assign(sogqb, (function () {
          * @name sogqb.AbstractTheme#__prepareCssStyles
          * @description
          * <p>Prepare CSS styles.</p>
+         * @param {String} styles CSS styles
          * @returns {String} Prepared CSS styles.
          */
         __prepareCssStyles: function (styles) {
@@ -167,10 +172,37 @@ Object.assign(sogqb, (function () {
             container.appendChild(query);
             container.appendChild(search);
             container.appendChild(clear);
-
-            this.update();
         },
 
+        /**
+         * @private
+         * @function
+         * @name sogqb.AbstractTheme#__prettify
+         * @description
+         * <p>Prettify container element.</p>
+         */
+        __prettify: function () {
+            var container = document.getElementById(this.container);
+            var queryWidth = container.clientWidth - 10;
+            container.childNodes.forEach(function (element) {
+                if (false === element.classList.contains('query')) {
+                    queryWidth -= element.clientWidth;
+                }
+            });
+
+            var queryElement = container.querySelector('.query');
+            queryElement.style.width = queryWidth + 'px';
+        },
+
+        /**
+         * @private
+         * @function
+         * @name sogqb.AbstractTheme#__prettify
+         * @description
+         * <p>Build html element.</p>
+         * @param {String} type The element type.
+         * @returns {ChildNode}
+         */
         __buildElement: function (type) {
             var template = document.createElement('template');
             var html = '';

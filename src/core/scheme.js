@@ -90,9 +90,7 @@ Object.assign(sogqb, function () {
 
         this.__scheme = scheme || null;
 
-        if (null !== this.__scheme) {
-            this.__validate();
-        }
+        this.__validate();
 
         this.name = 'Scheme';
     };
@@ -118,6 +116,8 @@ Object.assign(sogqb, function () {
          * @returns {Boolean}
          */
         __validate: function () {
+            sogqb.isValidException('Scheme', this.__scheme, 'required|array|count:1,100');
+
             for (var i = 0; i < this.__scheme.length; i ++) {
                 this.__validateEntity(this.__scheme[i].entity);
                 this.__validateColumns(this.__scheme[i].columns);
@@ -137,10 +137,7 @@ Object.assign(sogqb, function () {
          * @returns {Boolean}
          */
         __validateEntity: function (entity) {
-            var message = sogv.isValidWithErrorMessage(entity, 'required|string|alpha-dash|length:2,50');
-            if(null !== message) {
-                throw new Error("Entity: [" + entity + "] " + message);
-            }
+            sogqb.isValidException('Entity', entity, 'required|string|alpha-dash|length:2,50');
 
             return true;
         },
@@ -156,10 +153,7 @@ Object.assign(sogqb, function () {
          * @returns {Boolean}
          */
         __validateColumns: function (columns) {
-            var message = sogv.isValidWithErrorMessage(columns, 'required|array|between:1,1000');
-            if(null !== message) {
-                throw new Error("Columns: " + message);
-            }
+            sogqb.isValidException('Columns', columns, 'required|array|between:1,1000');
 
             columns.forEach(function(element) {
                 var validationEngine = new sogv.Application({

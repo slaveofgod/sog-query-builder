@@ -22,7 +22,45 @@ var _typeLookup = function () {
 var sogqb = {
     version: "__CURRENT_SDK_VERSION__",
     revision: "__REVISION__",
-    config: { },
+    config: {
+        stateElementTypes: [
+            'expression',
+            'conjunction'
+        ],
+        expressionOperators: [
+            {
+                key: 'equal',
+                label: 'Equal'
+            }, {
+                key: 'not_equal',
+                label: 'Not Equal'
+            }, {
+                key: 'more',
+                label: 'More'
+            }, {
+                key: 'more_or_equal',
+                label: 'More or Equal'
+            }, {
+                key: 'less',
+                label: 'Less'
+            }, {
+                key: 'less_or_equal',
+                label: 'less_or_equal'
+            }, {
+                key: 'like',
+                label: 'Like'
+            }
+        ],
+        conjunctionOperators: [
+            {
+                key: 'or',
+                label: 'Or'
+            }, {
+                key: 'and',
+                label: 'And'
+            }
+        ]
+    },
     common: { },
     themes: { },
 
@@ -118,37 +156,20 @@ var sogqb = {
 
     /**
      * @function
-     * @name sogqb.validateContainer
-     * @param {String} container Container.
+     * @name sogqb.isValidException
+     * @param {String} prefix Validation error message prefix.
+     * @param {*} data Validation data.
+     * @param {String} rules Validation rules.
      * @description
-     * <p>Validate container.</p>
+     * <p>Validating data.</p>
      * @exception
      * <p>The validation error message.</p>
      * @returns {Boolean}
      */
-    validateContainer: function (container) {
-        var message = sogv.isValidWithErrorMessage(container, 'required|string|length:5,255');
+    isValidException: function (prefix, data, rules) {
+        var message = sogv.isValidWithErrorMessage(data, rules);
         if(null !== message) {
-            throw new Error("Container: " + message);
-        }
-
-        return true;
-    },
-
-    /**
-     * @function
-     * @name sogqb.validateEntity
-     * @param {String} entity Entity name.
-     * @description
-     * <p>Validate entity name.</p>
-     * @exception
-     * <p>The validation error message.</p>
-     * @returns {Boolean}
-     */
-    validateEntity: function (entity) {
-        var message = sogv.isValidWithErrorMessage(entity, 'required|string|length:2,50');
-        if(null !== message) {
-            throw new Error("Entity: " + message);
+            throw new Error(prefix + ": " + message);
         }
 
         return true;

@@ -8,7 +8,7 @@ Object.assign(sogqb, function () {
      * @description Init Application.
      * @param {String} container The container of query string.
      * @param {String} entity The current entity.
-     * @param {Object} scheme=null The scheme of query.
+     * @param {Object} scheme The scheme of query.
      * @param {Object} state=null Query builder state. If this value is null, it will be used data from url.
      * @param {String} theme=material Theme.
      * @example
@@ -27,8 +27,8 @@ Object.assign(sogqb, function () {
         this.__state = state || null;
         this.__theme = theme || 'material';
 
-        sogqb.validateContainer(this.__container);
-        sogqb.validateEntity(this.__entity);
+        sogqb.isValidException('Container', this.__container, 'required|string|length:5,255'); // Validate container
+        sogqb.isValidException('Entity', this.__entity, 'required|string|length:2,50'); // Validate entity name
 
         this.setScheme(this.__scheme);
         this.setTheme(this.__theme);

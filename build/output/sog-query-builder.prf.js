@@ -1,5 +1,5 @@
 /*
- * SOG Query Builder Library v0.0.1 revision 2eb4eff (PROFILER)
+ * SOG Query Builder Library v0.0.1 revision db86ca4 (PROFILER)
  * Copyright 2019-2020 Slave of God <iamtheslaveofgod@gmail.com>. All rights reserved.
  */
 ;(function (root, factory) {
@@ -20,7 +20,7 @@ var _typeLookup = function() {
   }
   return result;
 }();
-var sogqb = {version:"0.0.1", revision:"2eb4eff", config:{}, common:{}, themes:{}, registerTheme:function(theme) {
+var sogqb = {version:"0.0.1", revision:"db86ca4", config:{stateElementTypes:["expression", "conjunction"], expressionOperators:[{key:"equal", label:"Equal"}, {key:"not_equal", label:"Not Equal"}, {key:"more", label:"More"}, {key:"more_or_equal", label:"More or Equal"}, {key:"less", label:"Less"}, {key:"less_or_equal", label:"less_or_equal"}, {key:"like", label:"Like"}], conjunctionOperators:[{key:"or", label:"Or"}, {key:"and", label:"And"}]}, common:{}, themes:{}, registerTheme:function(theme) {
   var __t = [theme];
   var __theme = new __t[0]({}, {}, true);
   var alias = __theme.alias;
@@ -53,16 +53,10 @@ var sogqb = {version:"0.0.1", revision:"2eb4eff", config:{}, common:{}, themes:{
   return new sogqb.Scheme(scheme);
 }, makeState:function(state, scheme) {
   return new sogqb.State(state, scheme);
-}, validateContainer:function(container) {
-  var message = sogv.isValidWithErrorMessage(container, "required|string|length:5,255");
+}, isValidException:function(prefix, data, rules) {
+  var message = sogv.isValidWithErrorMessage(data, rules);
   if (null !== message) {
-    throw new Error("Container: " + message);
-  }
-  return true;
-}, validateEntity:function(entity) {
-  var message = sogv.isValidWithErrorMessage(entity, "required|string|length:2,50");
-  if (null !== message) {
-    throw new Error("Entity: " + message);
+    throw new Error(prefix + ": " + message);
   }
   return true;
 }};
@@ -88,16 +82,8 @@ if (typeof exports !== "undefined") {
     }
     this.__afterDraw();
   }, update:function() {
-    console.info('Updating this container with the id "' + this.container + '" ...');
-    var container = document.getElementById(this.container);
-    var queryWidth = container.clientWidth - 10;
-    container.childNodes.forEach(function(element) {
-      if (false === element.classList.contains("query")) {
-        queryWidth -= element.clientWidth;
-      }
-    });
-    var queryElement = container.querySelector(".query");
-    queryElement.style.width = queryWidth + "px";
+    this.__destroy();
+    this.draw();
   }, __draw:function() {
     throw new Error('The theme has to implement "__draw" method');
   }, __beforeDraw:function() {
@@ -107,6 +93,8 @@ if (typeof exports !== "undefined") {
       console.info('This container with the id "' + this.container + '" does not exist.');
     }
   }, __afterDraw:function() {
+  }, __destroy:function() {
+    document.getElementById(this.container).innerHTML = "";
   }, __validateOptions:function(rules) {
     if ("undefined" === typeof rules || null === rules) {
       return;
@@ -115,10 +103,7 @@ if (typeof exports !== "undefined") {
       if (!rules.hasOwnProperty(key)) {
         continue;
       }
-      var message = sogv.isValidWithErrorMessage(this.__options[key], rules[key], true);
-      if (null !== message) {
-        throw new Error("[option:" + key + "]: " + message);
-      }
+      sogqb.isValidException("[option: " + key + "]", this.__options[key], rules[key]);
     }
   }, __prepareCssStyles:function(styles) {
     var parameters = {container:this.container};
@@ -142,7 +127,16 @@ if (typeof exports !== "undefined") {
     container.appendChild(query);
     container.appendChild(search);
     container.appendChild(clear);
-    this.update();
+  }, __prettify:function() {
+    var container = document.getElementById(this.container);
+    var queryWidth = container.clientWidth - 10;
+    container.childNodes.forEach(function(element) {
+      if (false === element.classList.contains("query")) {
+        queryWidth -= element.clientWidth;
+      }
+    });
+    var queryElement = container.querySelector(".query");
+    queryElement.style.width = queryWidth + "px";
   }, __buildElement:function(type) {
     var template = document.createElement("template");
     var html = "";
@@ -165,9 +159,7 @@ if (typeof exports !== "undefined") {
 Object.assign(sogqb, function() {
   var Scheme = function(scheme) {
     this.__scheme = scheme || null;
-    if (null !== this.__scheme) {
-      this.__validate();
-    }
+    this.__validate();
     this.name = "Scheme";
   };
   Scheme.prototype.constructor = Scheme;
@@ -175,22 +167,17 @@ Object.assign(sogqb, function() {
     return this.__scheme;
   }}});
   Object.assign(Scheme.prototype, {__validate:function() {
+    sogqb.isValidException("Scheme", this.__scheme, "required|array|count:1,100");
     for (var i = 0; i < this.__scheme.length; i++) {
       this.__validateEntity(this.__scheme[i].entity);
       this.__validateColumns(this.__scheme[i].columns);
     }
     return true;
   }, __validateEntity:function(entity) {
-    var message = sogv.isValidWithErrorMessage(entity, "required|string|alpha-dash|length:2,50");
-    if (null !== message) {
-      throw new Error("Entity: [" + entity + "] " + message);
-    }
+    sogqb.isValidException("Entity", entity, "required|string|alpha-dash|length:2,50");
     return true;
   }, __validateColumns:function(columns) {
-    var message = sogv.isValidWithErrorMessage(columns, "required|array|between:1,1000");
-    if (null !== message) {
-      throw new Error("Columns: " + message);
-    }
+    sogqb.isValidException("Columns", columns, "required|array|between:1,1000");
     columns.forEach(function(element) {
       var validationEngine = new sogv.Application({lang:"en"});
       var data = {name:element.name, title:element.title, type:element.type, data:element.data};
@@ -225,10 +212,38 @@ Object.assign(sogqb, function() {
     return this.__state;
   }}});
   Object.assign(State.prototype, {__validate:function() {
-    if ("Scheme" !== this.__scheme) {
-      throw new Error("Invalid query builder scheme");
+    sogqb.isValidException("State", this.__state, "required|array|count:1,100");
+    for (var i = 0; i < this.__state.length; i++) {
+      sogqb.isValidException("State > Type", this.__state[i].type, "required|alnum|in:" + sogqb.config.stateElementTypes.join(";"));
+      var validationEngine = new sogv.Application({lang:"en"});
+      var data = {};
+      var rules = {};
+      switch(this.__state[i].type) {
+        case "expression":
+          data = {field:this.__state[i].field, label:this.__state[i].label, value:this.__state[i].value, operator:this.__state[i].operator};
+          rules = {field:"required|regex:^[a-zA-Z0-9_-]+.[a-zA-Z0-9_-]+$", label:"required|string", value:"required|string", operator:"required|alnum|in:" + sogqb.config.expressionOperators.map(function(data) {
+            return data.key;
+          }).join(";")};
+          break;
+        case "conjunction":
+          data = {operator:this.__state[i].operator};
+          rules = {operator:"required|alnum|in:" + sogqb.config.conjunctionOperators.map(function(data) {
+            return data.key;
+          }).join(";")};
+          break;
+      }
+      var form = validationEngine.make(data, rules);
+      if (false === form.isValid()) {
+        for (var key in data) {
+          if (!data.hasOwnProperty(key)) {
+            continue;
+          }
+          if (false === form.get(key).isValid()) {
+            throw new Error(sogh.camelCase(this.__state[i].type) + " '" + key + "' = '" + data[key] + "': " + form.get(key).errors().first());
+          }
+        }
+      }
     }
-    console.log(this.__state);
     return true;
   }});
   return {State:State};
@@ -241,8 +256,8 @@ Object.assign(sogqb, function() {
     this.__scheme = scheme || null;
     this.__state = state || null;
     this.__theme = theme || "material";
-    sogqb.validateContainer(this.__container);
-    sogqb.validateEntity(this.__entity);
+    sogqb.isValidException("Container", this.__container, "required|string|length:5,255");
+    sogqb.isValidException("Entity", this.__entity, "required|string|length:2,50");
     this.setScheme(this.__scheme);
     this.setTheme(this.__theme);
     this.setState(this.__state, this.__scheme);
@@ -297,6 +312,7 @@ Object.assign(sogqb, function() {
   Object.assign(MaterialTheme.prototype, {__draw:function() {
     this.__buildStyleElement();
     this.__buildContainerElement();
+    this.__prettify();
   }});
   return {MaterialTheme:MaterialTheme};
 }());

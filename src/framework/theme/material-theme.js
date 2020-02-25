@@ -66,6 +66,7 @@ Object.assign(sogqb, function () {
         __draw: function () {
             this.__buildStyleElement();
             this.__buildContainerElement();
+            this.__prettify();
         }
     });
 

@@ -33,15 +33,15 @@ Object.assign(sogqb, function () {
 
     var State = function (state, scheme) {
 
-            this.__state = state || null;
-            this.__scheme = scheme || null;
+        this.__state = state || null;
+        this.__scheme = scheme || null;
 
-            if (null !== this.__state) {
-                this.__validate();
-            }
+        if (null !== this.__state) {
+            this.__validate();
+        }
 
-            this.name = 'State';
-        };
+        this.name = 'State';
+    };
 
     State.prototype.constructor = State;
 
@@ -64,13 +64,58 @@ Object.assign(sogqb, function () {
          * @returns {Boolean}
          */
         __validate: function () {
-            // Check query builder scheme
-            if ('Scheme' !== this.__scheme) {
-                throw new Error ('Invalid query builder scheme');
+            sogqb.isValidException('State', this.__state, 'required|array|count:1,100');
+            for (var i = 0; i < this.__state.length; i ++) {
+                sogqb.isValidException('State > Type', this.__state[i].type, 'required|alnum|in:' + sogqb.config.stateElementTypes.join(';'));
+
+                var validationEngine = new sogv.Application({
+                    lang: 'en'
+                });
+                var data = {};
+                var rules = {};
+
+                switch (this.__state[i].type) {
+                    case 'expression':
+                        data = {
+                            field: this.__state[i].field,
+                            label: this.__state[i].label,
+                            value: this.__state[i].value,
+                            operator: this.__state[i].operator
+                        };
+
+                        rules = {
+                            field: 'required|regex:^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$',
+                            label: 'required|string',
+                            value: 'required|string',
+                            operator: 'required|alnum|in:' + sogqb.config.expressionOperators.map(function (data) {
+                                return data.key;
+                            }).join(';'),
+                        };
+                        break;
+                    case 'conjunction':
+                        data = {
+                            operator: this.__state[i].operator
+                        };
+
+                        rules = {
+                            operator: 'required|alnum|in:' + sogqb.config.conjunctionOperators.map(function (data) {
+                                return data.key;
+                            }).join(';'),
+                        };
+                        break;
+                }
+
+                var form = validationEngine.make(data, rules);
+                if (false === form.isValid()) {
+                    for (var key in data) {
+                        if (!data.hasOwnProperty(key)) continue;
+
+                        if (false === form.get(key).isValid()) {
+                            throw new Error(sogh.camelCase(this.__state[i].type) + " '" + key + "' = '" + data[key] + "': " + form.get(key).errors().first());
+                        }
+                    }
+                }
             }
-
-
-            console.log(this.__state);
 
             return true;
         }
