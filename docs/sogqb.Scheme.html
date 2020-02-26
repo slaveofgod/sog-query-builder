@@ -86,42 +86,6 @@
             
         </li>
     
-        <li class="item" data-name="sogqb.AbstractTheme">
-            <span class="title  ">
-                
-                
-                    <a href="sogqb.AbstractTheme.html">sogqb.AbstractTheme</a>
-                
-            </span>
-            
-            <ul class="members itemMembers">
-            
-            </ul>
-            
-            <ul class="typedefs itemMembers">
-            
-            </ul>
-            
-            <ul class="typedefs itemMembers">
-            
-            </ul>
-            
-            <ul class="methods itemMembers">
-            
-            <span class="subtitle">Methods</span>
-            
-                <li class="parent  " data-name="sogqb.AbstractTheme#draw"><a href="sogqb.AbstractTheme.html#draw">draw</a></li>
-            
-                <li class="parent  " data-name="sogqb.AbstractTheme#update"><a href="sogqb.AbstractTheme.html#update">update</a></li>
-            
-            </ul>
-            
-            <ul class="events itemMembers">
-            
-            </ul>
-            
-        </li>
-    
         <li class="item" data-name="sogqb.Application">
             <span class="title  ">
                 
@@ -154,7 +118,39 @@
             
                 <li class="parent  " data-name="sogqb.Application#setTheme"><a href="sogqb.Application.html#setTheme">setTheme</a></li>
             
-                <li class="parent  " data-name="sogqb.Application#update"><a href="sogqb.Application.html#update">update</a></li>
+            </ul>
+            
+            <ul class="events itemMembers">
+            
+            </ul>
+            
+        </li>
+    
+        <li class="item" data-name="sogqb.BaseTheme">
+            <span class="title  ">
+                
+                
+                    <a href="sogqb.BaseTheme.html">sogqb.BaseTheme</a>
+                
+            </span>
+            
+            <ul class="members itemMembers">
+            
+            </ul>
+            
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="sogqb.BaseTheme#draw"><a href="sogqb.BaseTheme.html#draw">draw</a></li>
             
             </ul>
             
@@ -194,8 +190,6 @@
             
                 <li class="  " data-name="sogqb.MaterialTheme#draw"><a href="sogqb.MaterialTheme.html#draw">draw</a></li>
             
-                <li class="  " data-name="sogqb.MaterialTheme#update"><a href="sogqb.MaterialTheme.html#update">update</a></li>
-            
             </ul>
             
             <ul class="events itemMembers">
@@ -225,6 +219,10 @@
             </ul>
             
             <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="sogqb.Scheme#exist"><a href="sogqb.Scheme.html#exist">exist</a></li>
             
             </ul>
             
@@ -415,7 +413,7 @@
         {
             name: 'first_name',
             title: 'First Name',
-            type: 'string',
+            type: 'entity',
             data: [
                 {
                     id: 1,
@@ -437,7 +435,7 @@
         }, {
             name: 'last_name',
             title: 'Last Name',
-            type: 'string',
+            type: 'entity',
             data: [
                 {
                     id: 1,
@@ -507,6 +505,156 @@
     
     
     
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl class="list-methods">
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="exist">
+            <a class="share-icon" href="#exist"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                exist
+            </span>
+            <span class="signature">(field)</span><span class="type-signature">Boolean</span>
+            
+            
+            
+            
+        </h4>
+    
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Check that model or field for the model exists in the scheme.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>field</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                Checked field.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        Boolean
+                        
+                    
+            </td>
+            <td class="description last"></td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        </dl>
+    
     
     
     
@@ -525,7 +673,7 @@
 
         <footer class="content-size">
             <div class="footer">
-                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Tue Feb 25 2020 22:28:33 GMT+0200 (Eastern European Standard Time)
+                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Wed Feb 26 2020 13:48:08 GMT+0200 (Eastern European Standard Time)
             </div>
         </footer>
     </div>

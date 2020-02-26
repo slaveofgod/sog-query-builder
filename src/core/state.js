@@ -38,6 +38,7 @@ Object.assign(sogqb, function () {
 
         if (null !== this.__state) {
             this.__validate();
+            this.__validateFields();
         }
 
         this.name = 'State';
@@ -59,7 +60,7 @@ Object.assign(sogqb, function () {
          * @function
          * @name sogqb.State#__validate
          * @description
-         * <p>Validate State.</p>
+         * <p>Validate state.</p>
          * @exception Validation error message.
          * @returns {Boolean}
          */
@@ -113,6 +114,28 @@ Object.assign(sogqb, function () {
                         if (false === form.get(key).isValid()) {
                             throw new Error(sogh.camelCase(this.__state[i].type) + " '" + key + "' = '" + data[key] + "': " + form.get(key).errors().first());
                         }
+                    }
+                }
+            }
+
+            return true;
+        },
+
+        /**
+         * @private
+         * @function
+         * @name sogqb.State#__validateFields
+         * @description
+         * <p>Validate state fields.</p>
+         * @exception Validation error message.
+         * @returns {Boolean}
+         */
+        __validateFields: function () {
+            for (var i = 0; i < this.__state.length; i ++) {
+                if('expression' === this.__state[i].type) {
+                    var field =  this.__state[i].field.split('.');
+                    if (false === this.__scheme.exist(this.__state[i].field)) {
+                        throw new Error('Model "' + field[0] + '" or field "' + field[1] + '" for model "' + field[0] + '" does not exist.');
                     }
                 }
             }

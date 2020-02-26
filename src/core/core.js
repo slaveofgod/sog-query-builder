@@ -17,7 +17,8 @@ var _typeLookup = function () {
 /**
  * @name sogqb
  * @namespace
- * @description Root namespace for the SOG Query Builder Library
+ * @description
+ * <p>Root namespace for the SOG Query Builder Library.</p>
  */
 var sogqb = {
     version: "__CURRENT_SDK_VERSION__",
@@ -81,9 +82,9 @@ var sogqb = {
             throw new Error('The theme has to have "alias" property');
         }
 
-        // Check that the validator extend from "sogqb.AbstractTheme" abstract class
-        if ('AbstractTheme' !== __theme.base) {
-            throw new Error('The theme has to extend "sogqb.AbstractTheme" abstract class');
+        // Check that the validator extend from "sogqb.BaseTheme" abstract class
+        if ('BaseTheme' !== __theme.base) {
+            throw new Error('The theme has to extend "sogqb.BaseTheme" abstract class');
         }
 
         // Check that "draw" method is implemented

@@ -14,7 +14,7 @@ Object.assign(sogqb, function () {
      *         {
      *             name: 'first_name',
      *             title: 'First Name',
-     *             type: 'string',
+     *             type: 'entity',
      *             data: [
      *                 {
      *                     id: 1,
@@ -36,7 +36,7 @@ Object.assign(sogqb, function () {
      *         }, {
      *             name: 'last_name',
      *             title: 'Last Name',
-     *             type: 'string',
+     *             type: 'entity',
      *             data: [
      *                 {
      *                     id: 1,
@@ -107,6 +107,37 @@ Object.assign(sogqb, function () {
 
     Object.assign(Scheme.prototype, {
         /**
+         * @function
+         * @name sogqb.Scheme#exist
+         * @description
+         * <p>Check that model or field for the model exists in the scheme.</p>
+         * @param {String} field Checked field.
+         * @returns {Boolean}
+         */
+        exist: function (field) {
+            var field =  field.split('.');
+            var entity = null;
+            for (var i = 0; i < this.__scheme.length; i ++) {
+                if (field[0] === this.__scheme[i].entity) {
+                    entity = this.__scheme[i];
+                    break;
+                }
+            }
+
+            if (null === entity) {
+                return false;
+            }
+
+            for (var i = 0; i < entity.columns.length; i ++) {
+                if (field[1] === entity.columns[i].name) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
+
+        /**
          * @private
          * @function
          * @name sogqb.Scheme#__validate
@@ -170,7 +201,7 @@ Object.assign(sogqb, function () {
                 var rules = {
                     name: 'required|string|alpha-dash|length:2,50',
                     title: 'required|string|print|length:2,100',
-                    type: 'required|in:email;integer;numeric;string;date',
+                    type: 'required|in:email;integer;numeric;string;date;entity',
                     /**
                      * @todo Add deeper checking and [data: function] or [data: url]
                      */

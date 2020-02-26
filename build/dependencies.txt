@@ -1,6 +1,7 @@
 ../src/core/core.js
-../src/core/abstract-theme.js
+../src/core/base-theme.js
 ../src/core/scheme.js
 ../src/core/state.js
+../src/core/query-builder-factory.js
 ../src/framework/application.js
 ../src/framework/theme/material-theme.js

@@ -4,7 +4,7 @@ Object.assign(sogqb, function () {
     /**
      * @constructor
      * @name sogqb.MaterialTheme
-     * @extends sogqb.AbstractTheme
+     * @extends sogqb.BaseTheme
      * @classdesc
      * <p>Material admin theme.</p>
      * @description
@@ -32,7 +32,7 @@ Object.assign(sogqb, function () {
      */
 
     var MaterialTheme = function (options, optionRules, internal) {
-        sogqb.AbstractTheme.call(this, options, {
+        sogqb.BaseTheme.call(this, options, {
             container: optionRules.container || 'required|string|length:5,255'
         }, internal);
 
@@ -44,7 +44,7 @@ Object.assign(sogqb, function () {
         this.cssStyles = this.__prepareCssStyles('#%%container%%{height:36px;border:1px solid #5E5E5E;font-size:16px;}#%%container%% .query{height:34px;float:left;width:10px;padding:4px 0 4px 6px;}#%%container%% button.float-left{margin:3px 0 3px 3px;float:left;}#%%container%% button.float-right{margin:3px 3px 3px 0;float:right;}#%%container%% .btn-group-sm > .btn, .btn-super-sm{padding:3px 10px;font-size:14px;line-height:1.5;border-radius:2px;text-transform:none;}#%%container%% [contentEditable=true]:empty:not(:focus):before{content:attr(data-text);opacity:.5;}');
         this.name = 'MaterialTheme';
     };
-    MaterialTheme.prototype = Object.create(sogqb.AbstractTheme.prototype);
+    MaterialTheme.prototype = Object.create(sogqb.BaseTheme.prototype);
     MaterialTheme.prototype.constructor = MaterialTheme;
 
     Object.defineProperty(MaterialTheme.prototype, 'alias', {

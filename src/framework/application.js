@@ -37,7 +37,7 @@ Object.assign(sogqb, function () {
         this.name = 'Application';
 
         window.addEventListener("resize", function () {
-            __this.update();
+            __this.draw();
         });
     };
 
@@ -86,7 +86,7 @@ Object.assign(sogqb, function () {
          *         {
          *             name: 'first_name',
          *             title: 'First Name',
-         *             type: 'string',
+         *             type: 'entity',
          *             data: [
          *                 {
          *                     id: 1,
@@ -108,7 +108,7 @@ Object.assign(sogqb, function () {
          *         }, {
          *             name: 'last_name',
          *             title: 'Last Name',
-         *             type: 'string',
+         *             type: 'entity',
          *             data: [
          *                 {
          *                     id: 1,
@@ -192,6 +192,10 @@ Object.assign(sogqb, function () {
                 scheme = this.__state;
             }
 
+            if (null !== typeof scheme) {
+                scheme = this.__scheme;
+            }
+
             this.__state = sogqb.makeState(state, scheme);
         },
 
@@ -218,20 +222,9 @@ Object.assign(sogqb, function () {
          * <p>Draw query search container.</p>
          */
         draw: function () {
-            this.__theme.draw();
-            /**
-             * @todo Check that scheme is defined.
-             */
-        },
+            var builder = sogqb.QueryBuilderFactory.create(this.__scheme, this.__theme, this.__state);
 
-        /**
-         * @function
-         * @name sogqb.Application#update
-         * @description
-         * <p>Update query search container.</p>
-         */
-        update: function () {
-            this.__theme.update();
+            builder.draw();
         }
     });
 

@@ -1,5 +1,5 @@
 /*
- * SOG Query Builder Library v0.0.1 revision db86ca4
+ * SOG Query Builder Library v0.0.1 revision 1c0f86a
  * Copyright 2019-2020 Slave of God <iamtheslaveofgod@gmail.com>. All rights reserved.
  */
 ;(function (root, factory) {
@@ -20,15 +20,15 @@ var _typeLookup = function() {
   }
   return result;
 }();
-var sogqb = {version:"0.0.1", revision:"db86ca4", config:{stateElementTypes:["expression", "conjunction"], expressionOperators:[{key:"equal", label:"Equal"}, {key:"not_equal", label:"Not Equal"}, {key:"more", label:"More"}, {key:"more_or_equal", label:"More or Equal"}, {key:"less", label:"Less"}, {key:"less_or_equal", label:"less_or_equal"}, {key:"like", label:"Like"}], conjunctionOperators:[{key:"or", label:"Or"}, {key:"and", label:"And"}]}, common:{}, themes:{}, registerTheme:function(theme) {
+var sogqb = {version:"0.0.1", revision:"1c0f86a", config:{stateElementTypes:["expression", "conjunction"], expressionOperators:[{key:"equal", label:"Equal"}, {key:"not_equal", label:"Not Equal"}, {key:"more", label:"More"}, {key:"more_or_equal", label:"More or Equal"}, {key:"less", label:"Less"}, {key:"less_or_equal", label:"less_or_equal"}, {key:"like", label:"Like"}], conjunctionOperators:[{key:"or", label:"Or"}, {key:"and", label:"And"}]}, common:{}, themes:{}, registerTheme:function(theme) {
   var __t = [theme];
   var __theme = new __t[0]({}, {}, true);
   var alias = __theme.alias;
   if ("undefined" === typeof alias) {
     throw new Error('The theme has to have "alias" property');
   }
-  if ("AbstractTheme" !== __theme.base) {
-    throw new Error('The theme has to extend "sogqb.AbstractTheme" abstract class');
+  if ("BaseTheme" !== __theme.base) {
+    throw new Error('The theme has to extend "sogqb.BaseTheme" abstract class');
   }
   if ("undefined" === typeof __theme.__draw) {
     throw new Error('The theme has to implement "__draw" method');
@@ -64,26 +64,24 @@ if (typeof exports !== "undefined") {
   exports.sogqb = sogqb;
 }
 ;Object.assign(sogqb, function() {
-  var AbstractTheme = function(options, optionRules, internal) {
+  var BaseTheme = function(options, optionRules, internal) {
     this.__options = options || {};
     this.__internal = true === internal;
     this.__skipDrawing = false;
     if (false === this.__internal) {
       this.__validateOptions(optionRules);
     }
-    this.name = "AbstractTheme";
-    this.base = "AbstractTheme";
+    this.name = "BaseTheme";
+    this.base = "BaseTheme";
   };
-  Object.assign(AbstractTheme.prototype, {draw:function() {
+  Object.assign(BaseTheme.prototype, {draw:function() {
     this.__beforeDraw();
     if (false === this.__skipDrawing) {
+      this.__destroy();
       console.info('Drawing this container with the id "' + this.container + '" ...');
       this.__draw();
     }
     this.__afterDraw();
-  }, update:function() {
-    this.__destroy();
-    this.draw();
   }, __draw:function() {
     throw new Error('The theme has to implement "__draw" method');
   }, __beforeDraw:function() {
@@ -154,7 +152,7 @@ if (typeof exports !== "undefined") {
     template.innerHTML = html;
     return template.content.firstChild;
   }});
-  return {AbstractTheme:AbstractTheme};
+  return {BaseTheme:BaseTheme};
 }());
 Object.assign(sogqb, function() {
   var Scheme = function(scheme) {
@@ -166,7 +164,25 @@ Object.assign(sogqb, function() {
   Object.defineProperties(Scheme.prototype, {"scheme":{get:function() {
     return this.__scheme;
   }}});
-  Object.assign(Scheme.prototype, {__validate:function() {
+  Object.assign(Scheme.prototype, {exist:function(field) {
+    var field = field.split(".");
+    var entity = null;
+    for (var i = 0; i < this.__scheme.length; i++) {
+      if (field[0] === this.__scheme[i].entity) {
+        entity = this.__scheme[i];
+        break;
+      }
+    }
+    if (null === entity) {
+      return false;
+    }
+    for (var i = 0; i < entity.columns.length; i++) {
+      if (field[1] === entity.columns[i].name) {
+        return true;
+      }
+    }
+    return false;
+  }, __validate:function() {
     sogqb.isValidException("Scheme", this.__scheme, "required|array|count:1,100");
     for (var i = 0; i < this.__scheme.length; i++) {
       this.__validateEntity(this.__scheme[i].entity);
@@ -181,7 +197,7 @@ Object.assign(sogqb, function() {
     columns.forEach(function(element) {
       var validationEngine = new sogv.Application({lang:"en"});
       var data = {name:element.name, title:element.title, type:element.type, data:element.data};
-      var rules = {name:"required|string|alpha-dash|length:2,50", title:"required|string|print|length:2,100", type:"required|in:email;integer;numeric;string;date", data:"array"};
+      var rules = {name:"required|string|alpha-dash|length:2,50", title:"required|string|print|length:2,100", type:"required|in:email;integer;numeric;string;date;entity", data:"array"};
       var form = validationEngine.make(data, rules);
       if (false === form.isValid()) {
         for (var key in data) {
@@ -204,6 +220,7 @@ Object.assign(sogqb, function() {
     this.__scheme = scheme || null;
     if (null !== this.__state) {
       this.__validate();
+      this.__validateFields();
     }
     this.name = "State";
   };
@@ -245,9 +262,30 @@ Object.assign(sogqb, function() {
       }
     }
     return true;
+  }, __validateFields:function() {
+    for (var i = 0; i < this.__state.length; i++) {
+      if ("expression" === this.__state[i].type) {
+        var field = this.__state[i].field.split(".");
+        if (false === this.__scheme.exist(this.__state[i].field)) {
+          throw new Error('Model "' + field[0] + '" or field "' + field[1] + '" for model "' + field[0] + '" does not exist.');
+        }
+      }
+    }
+    return true;
   }});
   return {State:State};
 }());
+sogqb.QueryBuilderFactory = {create:function(scheme, theme, state) {
+  var __function = function(scheme, theme, state) {
+    this.__scheme = scheme;
+    this.__theme = theme;
+    this.__state = state;
+    this.draw = function() {
+      this.__theme.draw();
+    };
+  };
+  return new __function(scheme, theme, state);
+}};
 Object.assign(sogqb, function() {
   var Application = function(container, entity, scheme, state, theme) {
     var __this = this;
@@ -263,7 +301,7 @@ Object.assign(sogqb, function() {
     this.setState(this.__state, this.__scheme);
     this.name = "Application";
     window.addEventListener("resize", function() {
-      __this.update();
+      __this.draw();
     });
   };
   Application.prototype.constructor = Application;
@@ -284,19 +322,21 @@ Object.assign(sogqb, function() {
     if ("undefined" !== typeof state) {
       scheme = this.__state;
     }
+    if (null !== typeof scheme) {
+      scheme = this.__scheme;
+    }
     this.__state = sogqb.makeState(state, scheme);
   }, setTheme:function(theme) {
     this.__theme = sogqb.makeTheme(theme, {container:this.container}, {});
   }, draw:function() {
-    this.__theme.draw();
-  }, update:function() {
-    this.__theme.update();
+    var builder = sogqb.QueryBuilderFactory.create(this.__scheme, this.__theme, this.__state);
+    builder.draw();
   }});
   return {Application:Application};
 }());
 Object.assign(sogqb, function() {
   var MaterialTheme = function(options, optionRules, internal) {
-    sogqb.AbstractTheme.call(this, options, {container:optionRules.container || "required|string|length:5,255"}, internal);
+    sogqb.BaseTheme.call(this, options, {container:optionRules.container || "required|string|length:5,255"}, internal);
     this.__queryButton = '<div class="query" contentEditable=true data-text="Searching Filter"></div>';
     this.__searchButton = '<button class="btn btn-default waves-effect btn-super-sm float-right search"><i class="zmdi zmdi-search"></i></button>';
     this.__clearButton = '<button class="btn btn-default waves-effect btn-super-sm float-right clear"><i class="zmdi zmdi-close"></i></button>';
@@ -304,7 +344,7 @@ Object.assign(sogqb, function() {
     this.cssStyles = this.__prepareCssStyles("#%%container%%{height:36px;border:1px solid #5E5E5E;font-size:16px;}#%%container%% .query{height:34px;float:left;width:10px;padding:4px 0 4px 6px;}#%%container%% button.float-left{margin:3px 0 3px 3px;float:left;}#%%container%% button.float-right{margin:3px 3px 3px 0;float:right;}#%%container%% .btn-group-sm > .btn, .btn-super-sm{padding:3px 10px;font-size:14px;line-height:1.5;border-radius:2px;text-transform:none;}#%%container%% [contentEditable=true]:empty:not(:focus):before{content:attr(data-text);opacity:.5;}");
     this.name = "MaterialTheme";
   };
-  MaterialTheme.prototype = Object.create(sogqb.AbstractTheme.prototype);
+  MaterialTheme.prototype = Object.create(sogqb.BaseTheme.prototype);
   MaterialTheme.prototype.constructor = MaterialTheme;
   Object.defineProperty(MaterialTheme.prototype, "alias", {get:function() {
     return ["material"];

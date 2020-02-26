@@ -4,7 +4,7 @@ Object.assign(sogqb, (function () {
     /**
      * @abstract
      * @constructor
-     * @name sogqb.AbstractTheme
+     * @name sogqb.BaseTheme
      * @classdesc Abstract base class that implements functionality for theme.
      * @description Create a new theme extension.
      * @param {Object} options The setting options
@@ -13,7 +13,7 @@ Object.assign(sogqb, (function () {
      * @constructor
      */
 
-    var AbstractTheme = function (options, optionRules, internal) {
+    var BaseTheme = function (options, optionRules, internal) {
         this.__options = options || {};
         this.__internal = (true === internal);
         this.__skipDrawing = false;
@@ -22,20 +22,21 @@ Object.assign(sogqb, (function () {
             this.__validateOptions(optionRules);
         }
 
-        this.name = 'AbstractTheme';
-        this.base = 'AbstractTheme';
+        this.name = 'BaseTheme';
+        this.base = 'BaseTheme';
     };
 
-    Object.assign(AbstractTheme.prototype, {
+    Object.assign(BaseTheme.prototype, {
         /**
          * @function
-         * @name sogqb.AbstractTheme#draw
+         * @name sogqb.BaseTheme#draw
          * @description
          * <p>Draw query search container.</p>
          */
         draw: function () {
             this.__beforeDraw();
             if (false === this.__skipDrawing) {
+                this.__destroy();
                 console.info('Drawing this container with the id "' + this.container + '" ...');
                 this.__draw();
             }
@@ -43,20 +44,9 @@ Object.assign(sogqb, (function () {
         },
 
         /**
-         * @function
-         * @name sogqb.AbstractTheme#update
-         * @description
-         * <p>Update query search container.</p>
-         */
-        update: function () {
-            this.__destroy();
-            this.draw();
-        },
-
-        /**
          * @private
          * @function
-         * @name sogqb.AbstractTheme#__draw
+         * @name sogqb.BaseTheme#__draw
          * @description
          * <p>Draw query search container.</p>
          */
@@ -67,7 +57,7 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
-         * @name sogqb.AbstractTheme#__beforeDraw
+         * @name sogqb.BaseTheme#__beforeDraw
          * @description
          * <p>Execute before draw.</p>
          */
@@ -82,7 +72,7 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
-         * @name sogqb.AbstractTheme#__afterDraw
+         * @name sogqb.BaseTheme#__afterDraw
          * @description
          * <p>Execute before after.</p>
          */
@@ -91,7 +81,7 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
-         * @name sogqb.AbstractTheme#__destroy
+         * @name sogqb.BaseTheme#__destroy
          * @description
          * <p>Destroy query search container.</p>
          */
@@ -102,7 +92,7 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
-         * @name sogqb.AbstractTheme#__validateOptions
+         * @name sogqb.BaseTheme#__validateOptions
          * @description
          * <p>Validate options.</p>
          * @param {Object} rules Validation rules
@@ -122,7 +112,7 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
-         * @name sogqb.AbstractTheme#__prepareCssStyles
+         * @name sogqb.BaseTheme#__prepareCssStyles
          * @description
          * <p>Prepare CSS styles.</p>
          * @param {String} styles CSS styles
@@ -144,7 +134,7 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
-         * @name sogqb.AbstractTheme#__buildStyleElement
+         * @name sogqb.BaseTheme#__buildStyleElement
          * @description
          * <p>Build style element.</p>
          */
@@ -158,7 +148,7 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
-         * @name sogqb.AbstractTheme#__buildContainerElement
+         * @name sogqb.BaseTheme#__buildContainerElement
          * @description
          * <p>Build container element.</p>
          */
@@ -177,7 +167,7 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
-         * @name sogqb.AbstractTheme#__prettify
+         * @name sogqb.BaseTheme#__prettify
          * @description
          * <p>Prettify container element.</p>
          */
@@ -197,7 +187,7 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
-         * @name sogqb.AbstractTheme#__prettify
+         * @name sogqb.BaseTheme#__prettify
          * @description
          * <p>Build html element.</p>
          * @param {String} type The element type.
@@ -225,6 +215,6 @@ Object.assign(sogqb, (function () {
     });
 
     return {
-        AbstractTheme: AbstractTheme
+        BaseTheme: BaseTheme
     };
 }()));
