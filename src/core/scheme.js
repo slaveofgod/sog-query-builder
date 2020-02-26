@@ -108,6 +108,26 @@ Object.assign(sogqb, function () {
     Object.assign(Scheme.prototype, {
         /**
          * @function
+         * @name sogqb.Scheme#getEntity
+         * @description
+         * <p>Get entity by entity name.</p>
+         * @param {String} entityName Entity name.
+         * @returns {Object|Null}
+         */
+        getEntity: function (entityName) {
+            var entity = null;
+            for (var i = 0; i < this.__scheme.length; i ++) {
+                if (entityName === this.__scheme[i].entity) {
+                    entity = this.__scheme[i];
+                    break;
+                }
+            }
+
+            return entity;
+        },
+
+        /**
+         * @function
          * @name sogqb.Scheme#exist
          * @description
          * <p>Check that model or field for the model exists in the scheme.</p>
@@ -116,14 +136,8 @@ Object.assign(sogqb, function () {
          */
         exist: function (field) {
             var field =  field.split('.');
-            var entity = null;
-            for (var i = 0; i < this.__scheme.length; i ++) {
-                if (field[0] === this.__scheme[i].entity) {
-                    entity = this.__scheme[i];
-                    break;
-                }
-            }
 
+            var entity = this.getEntity(field[0]);
             if (null === entity) {
                 return false;
             }
@@ -135,6 +149,88 @@ Object.assign(sogqb, function () {
             }
 
             return false;
+        },
+
+        /**
+         * @function
+         * @name sogqb.Scheme#getEntityFields
+         * @description
+         * <p>Get entity fields by entity name.</p>
+         * @param {String} entityName Entity name.
+         * @returns {Object}
+         */
+        getEntityFields: function (entityName) {
+            var entity = this.getEntity(entityName);
+            var columns = [];
+            if (null === entity) {
+                return [];
+            }
+
+            for (var i = 0; i < entity.columns.length; i ++) {
+                columns.push({
+                    name: entity.columns[i].name,
+                    title: entity.columns[i].title
+                });
+            }
+
+            return columns;
+        },
+
+        /**
+         * @function
+         * @name sogqb.Scheme#getEntityFieldLabel
+         * @description
+         * <p>Get entity field label.</p>
+         * @param {String} field The field.
+         * @returns {Object}
+         */
+        getEntityFieldLabel: function (field) {
+            var field =  field.split('.');
+            var entity = this.getEntity(field[0]);
+            var label = field[1];
+
+            for (var i = 0; i < entity.columns.length; i ++) {
+                if (field[1] === entity.columns[i].name) {
+                    label = entity.columns[i].title;
+                    break;
+                }
+            }
+
+            return label;
+        },
+
+        /**
+         * @function
+         * @name sogqb.Scheme#getEntityFieldFormattedValue
+         * @description
+         * <p>Get entity field formatted value.</p>
+         * @param {String} field The field.
+         * @param {String|Integer} value The value.
+         * @returns {String}
+         */
+        getEntityFieldFormattedValue: function (field, value) {
+            var field =  field.split('.');
+            var entity = this.getEntity(field[0]);
+            var data = value;
+
+            for (var i = 0; i < entity.columns.length; i ++) {
+                if (field[1] === entity.columns[i].name) {
+                    switch (entity.columns[i].type) {
+                        case 'entity':
+                            for (var j = 0; j < entity.columns[i].data.length; j ++) {
+                                if (value === entity.columns[i].data[j].id) {
+                                    data = entity.columns[i].data[j].label;
+                                    break;
+                                }
+                            }
+                            break;
+                    }
+
+                    break;
+                }
+            }
+
+            return data;
         },
 
         /**

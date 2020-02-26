@@ -173,7 +173,7 @@ Object.assign(sogqb, function () {
          *         type: 'expression',
          *         field: 'user.first_name',
          *         label: 'Alexey',
-         *         value: 'id:1',
+         *         value: 1,
          *         operator: 'equal'
          *     }, {
          *         type: 'conjunction',
@@ -182,7 +182,7 @@ Object.assign(sogqb, function () {
          *         type: 'expression',
          *         field: 'user.last_name',
          *         label: 'Bob',
-         *         value: 'id:1',
+         *         value: 1,
          *         operator: 'equal'
          *     }
          * ], scheme);

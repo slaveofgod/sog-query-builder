@@ -14,7 +14,7 @@ Object.assign(sogqb, function () {
      *         type: 'expression',
      *         field: 'user.first_name',
      *         label: 'Alexey',
-     *         value: 'id:1',
+     *         value: 1,
      *         operator: 'equal'
      *     }, {
      *         type: 'conjunction',
@@ -23,7 +23,7 @@ Object.assign(sogqb, function () {
      *         type: 'expression',
      *         field: 'user.last_name',
      *         label: 'Bob',
-     *         value: 'id:1',
+     *         value: 1,
      *         operator: 'equal'
      *     }
      * ], scheme);
@@ -56,6 +56,43 @@ Object.assign(sogqb, function () {
 
     Object.assign(State.prototype, {
         /**
+         * @function
+         * @name sogqb.State#draw
+         * @description
+         * <p>Draw query search state.</p>
+         * @param {sogqb.BaseTheme} theme Theme object.
+         */
+        draw: function (theme) {
+            var fieldButton = theme.fieldButton;
+            var fieldValueButton = theme.fieldValueButton;
+            var expressionOperatorButton = theme.expressionOperatorButton;
+            var conjunctionOperatorButton = theme.conjunctionOperatorButton;
+
+            for (var i = 0; i < this.__state.length; i ++) {
+                switch (this.__state[i].type) {
+                    case 'expression':
+                        var field =  this.__state[i].field.split('.');
+                        theme.appendChild('field', {
+                            value: this.__state[i].field,
+                            label: this.__scheme.getEntityFieldLabel(this.__state[i].field),
+                        });
+                        theme.appendChild('expressionOperator', {
+                            label: this.__state[i].operator
+                        });
+                        theme.appendChild('fieldValue', {
+                            value: this.__state[i].value,
+                            label: this.__scheme.getEntityFieldFormattedValue(this.__state[i].field, this.__state[i].value)
+                        });
+                        break;
+                    case 'conjunction':
+                        theme.appendChild('conjunctionOperator', {
+                            label: this.__state[i].operator
+                        });
+                        break;
+                }
+            }
+        },
+        /**
          * @private
          * @function
          * @name sogqb.State#__validate
@@ -79,15 +116,13 @@ Object.assign(sogqb, function () {
                     case 'expression':
                         data = {
                             field: this.__state[i].field,
-                            label: this.__state[i].label,
                             value: this.__state[i].value,
                             operator: this.__state[i].operator
                         };
 
                         rules = {
                             field: 'required|regex:^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$',
-                            label: 'required|string',
-                            value: 'required|string',
+                            value: 'required|scalar',
                             operator: 'required|alnum|in:' + sogqb.config.expressionOperators.map(function (data) {
                                 return data.key;
                             }).join(';'),

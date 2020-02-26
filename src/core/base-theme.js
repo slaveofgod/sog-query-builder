@@ -29,6 +29,28 @@ Object.assign(sogqb, (function () {
     Object.assign(BaseTheme.prototype, {
         /**
          * @function
+         * @name sogqb.BaseTheme#appendChild
+         * @description
+         * <p>Add element to the query search container.</p>
+         */
+        appendChild: function (type, options) {
+            var container = document.getElementById(this.container);
+            var element = this.__buildElement(type, options);
+            container.appendChild(element);
+        },
+
+        /**
+         * @function
+         * @name sogqb.BaseTheme#destroy
+         * @description
+         * <p>Destroy query search container.</p>
+         */
+        destroy: function () {
+            document.getElementById(this.container).innerHTML = '';
+        },
+
+        /**
+         * @function
          * @name sogqb.BaseTheme#draw
          * @description
          * <p>Draw query search container.</p>
@@ -36,9 +58,12 @@ Object.assign(sogqb, (function () {
         draw: function () {
             this.__beforeDraw();
             if (false === this.__skipDrawing) {
-                this.__destroy();
                 console.info('Drawing this container with the id "' + this.container + '" ...');
                 this.__draw();
+
+                this.__buildStyleElement();
+                this.__buildContainerElement();
+                this.__prettify();
             }
             this.__afterDraw();
         },
@@ -77,17 +102,6 @@ Object.assign(sogqb, (function () {
          * <p>Execute before after.</p>
          */
         __afterDraw: function () { },
-
-        /**
-         * @private
-         * @function
-         * @name sogqb.BaseTheme#__destroy
-         * @description
-         * <p>Destroy query search container.</p>
-         */
-        __destroy: function () {
-            document.getElementById(this.container).innerHTML = '';
-        },
 
         /**
          * @private
@@ -141,7 +155,7 @@ Object.assign(sogqb, (function () {
         __buildStyleElement: function () {
             var container = document.getElementById(this.container);
             var style = document.createElement('style');
-            style.innerHTML = this.cssStyles;
+            style.innerHTML = this.__prepareCssStyles(this.cssStyles);
             container.appendChild(style);
         },
 
@@ -173,10 +187,10 @@ Object.assign(sogqb, (function () {
          */
         __prettify: function () {
             var container = document.getElementById(this.container);
-            var queryWidth = container.clientWidth - 10;
+            var queryWidth = container.clientWidth;
             container.childNodes.forEach(function (element) {
                 if (false === element.classList.contains('query')) {
-                    queryWidth -= element.clientWidth;
+                    queryWidth -= parseInt(element.clientWidth + 3);
                 }
             });
 
@@ -187,30 +201,80 @@ Object.assign(sogqb, (function () {
         /**
          * @private
          * @function
-         * @name sogqb.BaseTheme#__prettify
+         * @name sogqb.BaseTheme#__buildElement
          * @description
          * <p>Build html element.</p>
          * @param {String} type The element type.
+         * @param {String} options The element options.
          * @returns {ChildNode}
          */
-        __buildElement: function (type) {
+        __buildElement: function (type, options) {
             var template = document.createElement('template');
             var html = '';
 
             switch (type) {
                 case 'query':
-                    html = this.__queryButton.trim();
+                    html = this.queryButton.trim();
                     break;
                 case 'search':
-                    html = this.__searchButton.trim();
+                    html = this.searchButton.trim();
                     break;
                 case 'clear':
-                    html = this.__clearButton.trim();
+                    html = this.clearButton.trim();
+                    break;
+                case 'field':
+                    html = this.fieldButton.trim();
+                    break;
+                case 'expressionOperator':
+                    html = this.expressionOperatorButton.trim();
+                    break;
+                case 'fieldValue':
+                    html = this.fieldValueButton.trim();
+                    break;
+                case 'conjunctionOperator':
+                    html = this.conjunctionOperatorButton.trim();
                     break;
             }
 
-            template.innerHTML = html;
-            return template.content.firstChild;
+            template.innerHTML = this.__prepareElement(html, options);
+            var element = template.content.firstChild;
+
+            switch (type) {
+                case 'search':
+                case 'clear':
+                    element.className += " " + this.cssControlClasses;
+                    break;
+                case 'field':
+                case 'expressionOperator':
+                case 'fieldValue':
+                case 'conjunctionOperator':
+                    element.className += " " + this.cssQueryClasses;
+                    break;
+            }
+
+            return element;
+        },
+
+        /**
+         * @private
+         * @function
+         * @name sogqb.BaseTheme#__prepareElement
+         * @description
+         * <p>Prepare element.</p>
+         * @param {String} element The element.
+         * @param {String} options The element options.
+         * @returns {String}
+         */
+        __prepareElement: function (element, options) {
+            options = options || {};
+            for (var key in options) {
+                if (!options.hasOwnProperty(key)) {
+                    continue;
+                }
+                element = element.replace("%%" + key + "%%", options[key]);
+            }
+
+            return element;
         }
     });
 

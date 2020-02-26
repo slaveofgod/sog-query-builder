@@ -23,6 +23,8 @@ sogqb.QueryBuilderFactory = {
             this.__state = state;
 
             this.draw = function () {
+                this.__theme.destroy();
+                this.__state.draw(theme);
                 this.__theme.draw();
             };
         };

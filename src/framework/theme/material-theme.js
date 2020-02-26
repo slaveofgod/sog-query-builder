@@ -36,12 +36,7 @@ Object.assign(sogqb, function () {
             container: optionRules.container || 'required|string|length:5,255'
         }, internal);
 
-        this.__queryButton = '<div class="query" contentEditable=true data-text="Searching Filter"></div>';
-        this.__searchButton = '<button class="btn btn-default waves-effect btn-super-sm float-right search"><i class="zmdi zmdi-search"></i></button>';
-        this.__clearButton = '<button class="btn btn-default waves-effect btn-super-sm float-right clear"><i class="zmdi zmdi-close"></i></button>';
-
         this.container = this.__options.container;
-        this.cssStyles = this.__prepareCssStyles('#%%container%%{height:36px;border:1px solid #5E5E5E;font-size:16px;}#%%container%% .query{height:34px;float:left;width:10px;padding:4px 0 4px 6px;}#%%container%% button.float-left{margin:3px 0 3px 3px;float:left;}#%%container%% button.float-right{margin:3px 3px 3px 0;float:right;}#%%container%% .btn-group-sm > .btn, .btn-super-sm{padding:3px 10px;font-size:14px;line-height:1.5;border-radius:2px;text-transform:none;}#%%container%% [contentEditable=true]:empty:not(:focus):before{content:attr(data-text);opacity:.5;}');
         this.name = 'MaterialTheme';
     };
     MaterialTheme.prototype = Object.create(sogqb.BaseTheme.prototype);
@@ -55,6 +50,59 @@ Object.assign(sogqb, function () {
         }
     });
 
+    Object.defineProperties(MaterialTheme.prototype, {
+        cssStyles: {
+            get: function () {
+                return '#%%container%%{height:36px;border:1px solid #5E5E5E;font-size:16px;}#%%container%% .query{height:34px;float:left;width:10px;padding:4px 0 4px 6px;}#%%container%% button.float-left{margin:3px 0 3px 3px;float:left;}#%%container%% button.float-right{margin:3px 3px 3px 0;float:right;}#%%container%% .btn-group-sm > .btn, .btn-super-sm{padding:3px 10px;font-size:14px;line-height:1.5;border-radius:2px;text-transform:none;}#%%container%% [contentEditable=true]:empty:not(:focus):before{content:attr(data-text);opacity:.5;}'
+            }
+        },
+        cssControlClasses: {
+            get: function () {
+                return 'btn btn-default waves-effect btn-super-sm float-right'
+            }
+        },
+        cssQueryClasses: {
+            get: function () {
+                return 'btn btn-default btn-icon-text waves-effect btn-super-sm float-left'
+            }
+        },
+        queryButton: {
+            get: function () {
+                return '<div class="query" contentEditable=true data-text="Searching Filter"></div>'
+            }
+        },
+        searchButton: {
+            get: function () {
+                return '<button class="search"><i class="zmdi zmdi-search"></i></button>'
+            }
+        },
+        clearButton: {
+            get: function () {
+                return '<button class="clear"><i class="zmdi zmdi-close"></i></button>'
+            }
+        },
+        fieldButton: {
+            get: function () {
+                return '<button class = "bgm-lightgreen" data-value="%%value%%">%%label%%</button>'
+            }
+        },
+        expressionOperatorButton: {
+            get: function () {
+                return '<button class="bgm-lightblue" data-value="%%value%%">%%label%%</button>'
+            }
+        },
+        fieldValueButton: {
+            get: function () {
+                return '<button class="bgm-purple" data-value="%%value%%">%%label%%</button>'
+            }
+        },
+        conjunctionOperatorButton: {
+            get: function () {
+                return '<button class="bgm-black" data-value="%%value%%">%%label%%</button>'
+            }
+        }
+    });
+
     Object.assign(MaterialTheme.prototype, {
         /**
          * @private
@@ -63,11 +111,7 @@ Object.assign(sogqb, function () {
          * @description
          * <p>Draw query search container.</p>
          */
-        __draw: function () {
-            this.__buildStyleElement();
-            this.__buildContainerElement();
-            this.__prettify();
-        }
+        __draw: function () { }
     });
 
     return {
