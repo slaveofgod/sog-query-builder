@@ -252,6 +252,30 @@ Object.assign(sogqb, (function () {
                     break;
             }
 
+            switch (type) {
+                case 'query':
+                    element.classList.add('query-button');
+                    break;
+                case 'search':
+                    element.classList.add('search-button');
+                    break;
+                case 'clear':
+                    element.classList.add('clear-button');
+                    break;
+                case 'field':
+                    element.classList.add('field-button');
+                    break;
+                case 'expressionOperator':
+                    element.classList.add('expression-operator-button');
+                    break;
+                case 'fieldValue':
+                    element.classList.add('field-value-button');
+                    break;
+                case 'conjunctionOperator':
+                    element.classList.add('conjunction-operator-button');
+                    break;
+            }
+
             return element;
         },
 

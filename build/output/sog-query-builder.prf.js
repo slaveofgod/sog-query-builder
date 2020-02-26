@@ -1,5 +1,5 @@
 /*
- * SOG Query Builder Library v0.0.1 revision 838eab0 (PROFILER)
+ * SOG Query Builder Library v0.0.1 revision 0803c82 (PROFILER)
  * Copyright 2019-2020 Slave of God <iamtheslaveofgod@gmail.com>. All rights reserved.
  */
 ;(function (root, factory) {
@@ -20,7 +20,7 @@ var _typeLookup = function() {
   }
   return result;
 }();
-var sogqb = {version:"0.0.1", revision:"838eab0", config:{stateElementTypes:["expression", "conjunction"], expressionOperators:[{key:"equal", label:"Equal"}, {key:"not_equal", label:"Not Equal"}, {key:"more", label:"More"}, {key:"more_or_equal", label:"More or Equal"}, {key:"less", label:"Less"}, {key:"less_or_equal", label:"less_or_equal"}, {key:"like", label:"Like"}], conjunctionOperators:[{key:"or", label:"Or"}, {key:"and", label:"And"}]}, common:{}, themes:{}, registerTheme:function(theme) {
+var sogqb = {version:"0.0.1", revision:"0803c82", config:{stateElementTypes:["expression", "conjunction"], expressionOperators:[{key:"equal", label:"Equal"}, {key:"not_equal", label:"Not Equal"}, {key:"more", label:"More"}, {key:"more_or_equal", label:"More or Equal"}, {key:"less", label:"Less"}, {key:"less_or_equal", label:"less_or_equal"}, {key:"like", label:"Like"}], conjunctionOperators:[{key:"or", label:"Or"}, {key:"and", label:"And"}]}, common:{}, themes:{}, registerTheme:function(theme) {
   var __t = [theme];
   var __theme = new __t[0]({}, {}, true);
   var alias = __theme.alias;
@@ -179,6 +179,29 @@ if (typeof exports !== "undefined") {
       case "fieldValue":
       case "conjunctionOperator":
         element.className += " " + this.cssQueryClasses;
+        break;
+    }
+    switch(type) {
+      case "query":
+        element.classList.add("query-button");
+        break;
+      case "search":
+        element.classList.add("search-button");
+        break;
+      case "clear":
+        element.classList.add("clear-button");
+        break;
+      case "field":
+        element.classList.add("field-button");
+        break;
+      case "expressionOperator":
+        element.classList.add("expression-operator-button");
+        break;
+      case "fieldValue":
+        element.classList.add("field-value-button");
+        break;
+      case "conjunctionOperator":
+        element.classList.add("conjunction-operator-button");
         break;
     }
     return element;
