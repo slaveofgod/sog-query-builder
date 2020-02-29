@@ -170,12 +170,14 @@ Object.assign(sogqb, (function () {
             var container = document.getElementById(this.container);
 
             var query = this.__buildElement('query');
+            var save = this.__buildElement('save');
             var search = this.__buildElement('search');
             var clear = this.__buildElement('clear');
 
             container.appendChild(query);
             container.appendChild(search);
             container.appendChild(clear);
+            container.appendChild(save);
         },
 
         /**
@@ -209,7 +211,6 @@ Object.assign(sogqb, (function () {
          * @returns {ChildNode}
          */
         __buildElement: function (type, options) {
-            var template = document.createElement('template');
             var html = '';
 
             switch (type) {
@@ -221,6 +222,9 @@ Object.assign(sogqb, (function () {
                     break;
                 case 'clear':
                     html = this.clearButton.trim();
+                    break;
+                case 'save':
+                    html = this.saveButton.trim();
                     break;
                 case 'field':
                     html = this.fieldButton.trim();
@@ -236,12 +240,12 @@ Object.assign(sogqb, (function () {
                     break;
             }
 
-            template.innerHTML = this.__prepareElement(html, options);
-            var element = template.content.firstChild;
+            var element = sogqb.__createHtmlElementFromString(this.__prepareElement(html, options));
 
             switch (type) {
                 case 'search':
                 case 'clear':
+                case 'save':
                     element.className += " " + this.cssControlClasses;
                     break;
                 case 'field':
@@ -261,6 +265,9 @@ Object.assign(sogqb, (function () {
                     break;
                 case 'clear':
                     element.classList.add('clear-button');
+                    break;
+                case 'save':
+                    element.classList.add('save-button');
                     break;
                 case 'field':
                     element.classList.add('field-button');

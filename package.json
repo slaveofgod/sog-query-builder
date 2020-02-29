@@ -37,8 +37,8 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "sog-helper": "^1.2.0",
-    "sog-validator": "^1.4.1"
+    "sog-helper": "^1.2.1",
+    "sog-validator": "^1.6.0"
   },
   "devDependencies": {
     "@pixi/jsdoc-template": "^2.5.1",

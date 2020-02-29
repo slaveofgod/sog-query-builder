@@ -29,16 +29,17 @@ Object.assign(sogqb, function () {
      * ], scheme);
      */
 
-        // PROPERTIES
+    // PROPERTIES
 
     var State = function (state, scheme) {
 
-        this.__state = state || null;
-        this.__scheme = scheme || null;
+        this.__state = state || [];
+        this.__scheme = scheme || [];
 
         if (null !== this.__state) {
             this.__validate();
             this.__validateFields();
+            this.__init();
         }
 
         this.name = 'State';
@@ -57,6 +58,22 @@ Object.assign(sogqb, function () {
     Object.assign(State.prototype, {
         /**
          * @function
+         * @name sogqb.State#add
+         * @description
+         * <p>Add new state item.</p>
+         * @param {Object} options New state options.
+         * @param {Boolean} strict Strict validation mode.
+         */
+        add: function (options, strict) {
+            strict = strict || true;
+
+            this.__state.push(options);
+
+            this.__validate(strict);
+        },
+
+        /**
+         * @function
          * @name sogqb.State#draw
          * @description
          * <p>Draw query search state.</p>
@@ -72,45 +89,154 @@ Object.assign(sogqb, function () {
                 switch (this.__state[i].type) {
                     case 'expression':
                         var field =  this.__state[i].field.split('.');
-                        theme.appendChild('field', {
-                            value: this.__state[i].field,
-                            label: this.__scheme.getEntityFieldLabel(this.__state[i].field),
-                        });
-                        theme.appendChild('expressionOperator', {
-                            label: this.__state[i].operator
-                        });
-                        theme.appendChild('fieldValue', {
-                            value: this.__state[i].value,
-                            label: this.__scheme.getEntityFieldFormattedValue(this.__state[i].field, this.__state[i].value)
-                        });
+
+                        if (null != this.__state[i].field) {
+                            theme.appendChild('field', {
+                                value: this.__state[i].field,
+                                label: this.__scheme.getEntityFieldLabel(this.__state[i].field),
+                            });
+                        }
+
+                        if (null != this.__state[i].operator) {
+                            theme.appendChild('expressionOperator', {
+                                value: this.__state[i].operator,
+                                label: this.__scheme.getFormattedExpressionOperator(this.__state[i].operator)
+                            });
+                        }
+
+                        if (null != this.__state[i].value) {
+                            theme.appendChild('fieldValue', {
+                                value: this.__state[i].value,
+                                label: this.__scheme.getEntityFieldFormattedValue(this.__state[i].field, this.__state[i].value)
+                            });
+                        }
                         break;
                     case 'conjunction':
                         theme.appendChild('conjunctionOperator', {
-                            label: this.__state[i].operator
+                            value: this.__state[i].operator,
+                            label: this.__scheme.getFormattedConjunctionOperator(this.__state[i].operator)
                         });
                         break;
                 }
             }
         },
+
+        /**
+         * @function
+         * @name sogqb.State#removeLatestBlock
+         * @description
+         * <p>Remove latest block.</p>
+         */
+        removeLatestBlock: function () {
+            var blockIndex = this.latestBlockIndex();
+
+            if (null !== blockIndex) {
+                this.__state.splice(blockIndex, 1);
+            }
+        },
+
+        /**
+         * @function
+         * @name sogqb.State#nextElementType
+         * @description
+         * <p>Next element type.</p>
+         * @returns {String} The element type.
+         */
+        nextElementType: function () {
+            var block = this.latestBlock();
+
+            if (
+                null === block
+                || (
+                    'complete' === block.status
+                    && 'conjunction' === block.type
+                )
+            ) {
+                return 'field';
+            }
+
+            switch (block.status) {
+                case 'complete':
+                    return 'conjunction';
+                    break;
+                case 'field':
+                    return 'operator';
+                    break;
+                case 'operator':
+                    return 'value';
+                    break;
+            }
+        },
+
+        /**
+         * @private
+         * @function
+         * @name sogqb.State#__init
+         * @description
+         * <p>Initialize state.</p>
+         */
+        __init: function () {
+            for (var i = 0; i < this.__state.length; i ++) {
+                this.__state[i].status = 'complete';
+            }
+        },
+
+        /**
+         * @private
+         * @function
+         * @name sogqb.State#latestBlockIndex
+         * @description
+         * <p>Latest block index.</p>
+         * @returns {Integer|Null}
+         */
+        latestBlockIndex: function () {
+            if (this.__state.length == 0) {
+                return null;
+            }
+
+            return this.__state.length - 1;
+        },
+
+        /**
+         * @function
+         * @name sogqb.State#latestBlock
+         * @description
+         * <p>Latest block.</p>
+         * * @returns {Object|Null}
+         */
+        latestBlock: function () {
+            var blockIndex = this.latestBlockIndex();
+            if (null === blockIndex) {
+                return null;
+            }
+
+            return this.__state[blockIndex];
+        },
+
         /**
          * @private
          * @function
          * @name sogqb.State#__validate
          * @description
          * <p>Validate state.</p>
+         * @param {Boolean} strict Strict validation mode.
          * @exception Validation error message.
          * @returns {Boolean}
          */
-        __validate: function () {
-            sogqb.isValidException('State', this.__state, 'required|array|count:1,100');
+        __validate: function (strict) {
+            strict = strict || true;
+
+            sogqb.isValidException('State', this.__state, 'required|array');
             for (var i = 0; i < this.__state.length; i ++) {
                 sogqb.isValidException('State > Type', this.__state[i].type, 'required|alnum|in:' + sogqb.config.stateElementTypes.join(';'));
 
                 var validationEngine = new sogv.Application({
                     lang: 'en'
                 });
+
                 var data = {};
                 var rules = {};
+                var required = (false === strict || 'complete' !== this.__state[i].status) ? '' : 'required|';
 
                 switch (this.__state[i].type) {
                     case 'expression':
@@ -122,8 +248,8 @@ Object.assign(sogqb, function () {
 
                         rules = {
                             field: 'required|regex:^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$',
-                            value: 'required|scalar',
-                            operator: 'required|alnum|in:' + sogqb.config.expressionOperators.map(function (data) {
+                            value: required + 'scalar',
+                            operator: required + 'alnum|in:' + sogqb.config.expressionOperators.map(function (data) {
                                 return data.key;
                             }).join(';'),
                         };
@@ -167,7 +293,10 @@ Object.assign(sogqb, function () {
          */
         __validateFields: function () {
             for (var i = 0; i < this.__state.length; i ++) {
-                if('expression' === this.__state[i].type) {
+                if(
+                    'expression' === this.__state[i].type
+                    && 'complete' === this.__state[i].status
+                ) {
                     var field =  this.__state[i].field.split('.');
                     if (false === this.__scheme.exist(this.__state[i].field)) {
                         throw new Error('Model "' + field[0] + '" or field "' + field[1] + '" for model "' + field[0] + '" does not exist.');

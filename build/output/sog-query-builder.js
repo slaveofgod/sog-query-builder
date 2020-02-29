@@ -1,5 +1,5 @@
 /*
- * SOG Query Builder Library v0.0.1 revision 0803c82
+ * SOG Query Builder Library v0.0.1 revision 8bf1a81
  * Copyright 2019-2020 Slave of God <iamtheslaveofgod@gmail.com>. All rights reserved.
  */
 ;(function (root, factory) {
@@ -20,7 +20,20 @@ var _typeLookup = function() {
   }
   return result;
 }();
-var sogqb = {version:"0.0.1", revision:"0803c82", config:{stateElementTypes:["expression", "conjunction"], expressionOperators:[{key:"equal", label:"Equal"}, {key:"not_equal", label:"Not Equal"}, {key:"more", label:"More"}, {key:"more_or_equal", label:"More or Equal"}, {key:"less", label:"Less"}, {key:"less_or_equal", label:"less_or_equal"}, {key:"like", label:"Like"}], conjunctionOperators:[{key:"or", label:"Or"}, {key:"and", label:"And"}]}, common:{}, themes:{}, registerTheme:function(theme) {
+var sogqb = {version:"0.0.1", revision:"8bf1a81", config:{stateElementTypes:["expression", "conjunction"], expressionOperators:[{key:"equal", label:"Equal"}, {key:"not_equal", label:"Not Equal"}, {key:"more", label:"More"}, {key:"more_or_equal", label:"More or Equal"}, {key:"less", label:"Less"}, {key:"less_or_equal", label:"less_or_equal"}, {key:"like", label:"Like"}], conjunctionOperators:[{key:"or", label:"Or"}, {key:"and", label:"And"}], operators:{entity:["equal", "not_equal"]}}, 
+common:{}, themes:{}, operatorsList:function(type) {
+  var operators = this.config.operators[type];
+  var list = [];
+  for (var i = 0; i < operators.length; i++) {
+    for (var j = 0; j < this.config.expressionOperators.length; j++) {
+      if (operators[i] === this.config.expressionOperators[j].key) {
+        list.push({key:this.config.expressionOperators[j].key, label:this.config.expressionOperators[j].label});
+        break;
+      }
+    }
+  }
+  return list;
+}, registerTheme:function(theme) {
   var __t = [theme];
   var __theme = new __t[0]({}, {}, true);
   var alias = __theme.alias;
@@ -59,6 +72,10 @@ var sogqb = {version:"0.0.1", revision:"0803c82", config:{stateElementTypes:["ex
     throw new Error(prefix + ": " + message);
   }
   return true;
+}, __createHtmlElementFromString:function(string) {
+  var template = document.createElement("template");
+  template.innerHTML = string;
+  return template.content.firstChild;
 }};
 if (typeof exports !== "undefined") {
   exports.sogqb = sogqb;
@@ -126,11 +143,13 @@ if (typeof exports !== "undefined") {
   }, __buildContainerElement:function() {
     var container = document.getElementById(this.container);
     var query = this.__buildElement("query");
+    var save = this.__buildElement("save");
     var search = this.__buildElement("search");
     var clear = this.__buildElement("clear");
     container.appendChild(query);
     container.appendChild(search);
     container.appendChild(clear);
+    container.appendChild(save);
   }, __prettify:function() {
     var container = document.getElementById(this.container);
     var queryWidth = container.clientWidth;
@@ -142,7 +161,6 @@ if (typeof exports !== "undefined") {
     var queryElement = container.querySelector(".query");
     queryElement.style.width = queryWidth + "px";
   }, __buildElement:function(type, options) {
-    var template = document.createElement("template");
     var html = "";
     switch(type) {
       case "query":
@@ -153,6 +171,9 @@ if (typeof exports !== "undefined") {
         break;
       case "clear":
         html = this.clearButton.trim();
+        break;
+      case "save":
+        html = this.saveButton.trim();
         break;
       case "field":
         html = this.fieldButton.trim();
@@ -167,11 +188,11 @@ if (typeof exports !== "undefined") {
         html = this.conjunctionOperatorButton.trim();
         break;
     }
-    template.innerHTML = this.__prepareElement(html, options);
-    var element = template.content.firstChild;
+    var element = sogqb.__createHtmlElementFromString(this.__prepareElement(html, options));
     switch(type) {
       case "search":
       case "clear":
+      case "save":
         element.className += " " + this.cssControlClasses;
         break;
       case "field":
@@ -190,6 +211,9 @@ if (typeof exports !== "undefined") {
         break;
       case "clear":
         element.classList.add("clear-button");
+        break;
+      case "save":
+        element.classList.add("save-button");
         break;
       case "field":
         element.classList.add("field-button");
@@ -236,6 +260,22 @@ Object.assign(sogqb, function() {
       }
     }
     return entity;
+  }, getEntityColumns:function(entityName) {
+    var entity = this.getEntity(entityName);
+    if (null === entity) {
+      return null;
+    }
+    return entity.columns;
+  }, getEntityColumnsList:function(entityName) {
+    var list = [];
+    var columns = this.getEntityColumns(entityName);
+    if (null === columns) {
+      return list;
+    }
+    for (var i = 0; i < columns.length; i++) {
+      list.push({key:entityName + "." + columns[i].name, label:columns[i].title});
+    }
+    return list;
   }, exist:function(field) {
     var field = field.split(".");
     var entity = this.getEntity(field[0]);
@@ -258,17 +298,28 @@ Object.assign(sogqb, function() {
       columns.push({name:entity.columns[i].name, title:entity.columns[i].title});
     }
     return columns;
-  }, getEntityFieldLabel:function(field) {
+  }, getEntityField:function(field) {
     var field = field.split(".");
     var entity = this.getEntity(field[0]);
-    var label = field[1];
     for (var i = 0; i < entity.columns.length; i++) {
       if (field[1] === entity.columns[i].name) {
-        label = entity.columns[i].title;
+        return entity.columns[i];
         break;
       }
     }
-    return label;
+    return null;
+  }, getEntityFieldLabel:function(field) {
+    field = this.getEntityField(field);
+    if (null === field) {
+      return field;
+    }
+    return field.title;
+  }, getEntityFieldType:function(field) {
+    field = this.getEntityField(field);
+    if (null === field) {
+      return field;
+    }
+    return field.type;
   }, getEntityFieldFormattedValue:function(field, value) {
     var field = field.split(".");
     var entity = this.getEntity(field[0]);
@@ -289,6 +340,47 @@ Object.assign(sogqb, function() {
       }
     }
     return data;
+  }, getEntityFieldValueList:function(field) {
+    var field = field.split(".");
+    var entity = this.getEntity(field[0]);
+    var data = [];
+    for (var i = 0; i < entity.columns.length; i++) {
+      if (field[1] === entity.columns[i].name) {
+        switch(entity.columns[i].type) {
+          case "entity":
+            for (var j = 0; j < entity.columns[i].data.length; j++) {
+              data.push({key:entity.columns[i].data[j].id, label:entity.columns[i].data[j].label});
+            }
+            break;
+        }
+        break;
+      }
+    }
+    return data;
+  }, getFormattedExpressionOperator:function(operator) {
+    var operators = sogqb.config.expressionOperators;
+    for (var key in operators) {
+      if (!operators.hasOwnProperty(key)) {
+        continue;
+      }
+      if (operator === operators[key].key) {
+        operator = operators[key].label;
+        break;
+      }
+    }
+    return operator;
+  }, getFormattedConjunctionOperator:function(operator) {
+    var operators = sogqb.config.conjunctionOperators;
+    for (var key in operators) {
+      if (!operators.hasOwnProperty(key)) {
+        continue;
+      }
+      if (operator === operators[key].key) {
+        operator = operators[key].label;
+        break;
+      }
+    }
+    return operator;
   }, __validate:function() {
     sogqb.isValidException("Scheme", this.__scheme, "required|array|count:1,100");
     for (var i = 0; i < this.__scheme.length; i++) {
@@ -323,11 +415,12 @@ Object.assign(sogqb, function() {
 }());
 Object.assign(sogqb, function() {
   var State = function(state, scheme) {
-    this.__state = state || null;
-    this.__scheme = scheme || null;
+    this.__state = state || [];
+    this.__scheme = scheme || [];
     if (null !== this.__state) {
       this.__validate();
       this.__validateFields();
+      this.__init();
     }
     this.name = "State";
   };
@@ -335,7 +428,11 @@ Object.assign(sogqb, function() {
   Object.defineProperties(State.prototype, {"state":{get:function() {
     return this.__state;
   }}});
-  Object.assign(State.prototype, {draw:function(theme) {
+  Object.assign(State.prototype, {add:function(options, strict) {
+    strict = strict || true;
+    this.__state.push(options);
+    this.__validate(strict);
+  }, draw:function(theme) {
     var fieldButton = theme.fieldButton;
     var fieldValueButton = theme.fieldValueButton;
     var expressionOperatorButton = theme.expressionOperatorButton;
@@ -344,26 +441,70 @@ Object.assign(sogqb, function() {
       switch(this.__state[i].type) {
         case "expression":
           var field = this.__state[i].field.split(".");
-          theme.appendChild("field", {value:this.__state[i].field, label:this.__scheme.getEntityFieldLabel(this.__state[i].field)});
-          theme.appendChild("expressionOperator", {label:this.__state[i].operator});
-          theme.appendChild("fieldValue", {value:this.__state[i].value, label:this.__scheme.getEntityFieldFormattedValue(this.__state[i].field, this.__state[i].value)});
+          if (null != this.__state[i].field) {
+            theme.appendChild("field", {value:this.__state[i].field, label:this.__scheme.getEntityFieldLabel(this.__state[i].field)});
+          }
+          if (null != this.__state[i].operator) {
+            theme.appendChild("expressionOperator", {value:this.__state[i].operator, label:this.__scheme.getFormattedExpressionOperator(this.__state[i].operator)});
+          }
+          if (null != this.__state[i].value) {
+            theme.appendChild("fieldValue", {value:this.__state[i].value, label:this.__scheme.getEntityFieldFormattedValue(this.__state[i].field, this.__state[i].value)});
+          }
           break;
         case "conjunction":
-          theme.appendChild("conjunctionOperator", {label:this.__state[i].operator});
+          theme.appendChild("conjunctionOperator", {value:this.__state[i].operator, label:this.__scheme.getFormattedConjunctionOperator(this.__state[i].operator)});
           break;
       }
     }
-  }, __validate:function() {
-    sogqb.isValidException("State", this.__state, "required|array|count:1,100");
+  }, removeLatestBlock:function() {
+    var blockIndex = this.latestBlockIndex();
+    if (null !== blockIndex) {
+      this.__state.splice(blockIndex, 1);
+    }
+  }, nextElementType:function() {
+    var block = this.latestBlock();
+    if (null === block || "complete" === block.status && "conjunction" === block.type) {
+      return "field";
+    }
+    switch(block.status) {
+      case "complete":
+        return "conjunction";
+        break;
+      case "field":
+        return "operator";
+        break;
+      case "operator":
+        return "value";
+        break;
+    }
+  }, __init:function() {
+    for (var i = 0; i < this.__state.length; i++) {
+      this.__state[i].status = "complete";
+    }
+  }, latestBlockIndex:function() {
+    if (this.__state.length == 0) {
+      return null;
+    }
+    return this.__state.length - 1;
+  }, latestBlock:function() {
+    var blockIndex = this.latestBlockIndex();
+    if (null === blockIndex) {
+      return null;
+    }
+    return this.__state[blockIndex];
+  }, __validate:function(strict) {
+    strict = strict || true;
+    sogqb.isValidException("State", this.__state, "required|array");
     for (var i = 0; i < this.__state.length; i++) {
       sogqb.isValidException("State > Type", this.__state[i].type, "required|alnum|in:" + sogqb.config.stateElementTypes.join(";"));
       var validationEngine = new sogv.Application({lang:"en"});
       var data = {};
       var rules = {};
+      var required = false === strict || "complete" !== this.__state[i].status ? "" : "required|";
       switch(this.__state[i].type) {
         case "expression":
           data = {field:this.__state[i].field, value:this.__state[i].value, operator:this.__state[i].operator};
-          rules = {field:"required|regex:^[a-zA-Z0-9_-]+.[a-zA-Z0-9_-]+$", value:"required|scalar", operator:"required|alnum|in:" + sogqb.config.expressionOperators.map(function(data) {
+          rules = {field:"required|regex:^[a-zA-Z0-9_-]+.[a-zA-Z0-9_-]+$", value:required + "scalar", operator:required + "alnum|in:" + sogqb.config.expressionOperators.map(function(data) {
             return data.key;
           }).join(";")};
           break;
@@ -389,7 +530,7 @@ Object.assign(sogqb, function() {
     return true;
   }, __validateFields:function() {
     for (var i = 0; i < this.__state.length; i++) {
-      if ("expression" === this.__state[i].type) {
+      if ("expression" === this.__state[i].type && "complete" === this.__state[i].status) {
         var field = this.__state[i].field.split(".");
         if (false === this.__scheme.exist(this.__state[i].field)) {
           throw new Error('Model "' + field[0] + '" or field "' + field[1] + '" for model "' + field[0] + '" does not exist.');
@@ -421,6 +562,7 @@ Object.assign(sogqb, function() {
     this.__scheme = scheme || null;
     this.__state = state || null;
     this.__theme = theme || "material";
+    this.initialized = false;
     sogqb.isValidException("Container", this.__container, "required|string|length:5,255");
     sogqb.isValidException("Entity", this.__entity, "required|string|length:2,50");
     this.setScheme(this.__scheme);
@@ -458,6 +600,100 @@ Object.assign(sogqb, function() {
   }, draw:function() {
     var builder = sogqb.QueryBuilderFactory.create(this.__scheme, this.__theme, this.__state);
     builder.draw();
+    this.__init();
+  }, __init:function() {
+    var __this = this;
+    var queryButton = document.querySelector("#" + this.container + " .query-button");
+    var container = document.getElementById(this.container);
+    if (null !== container) {
+      document.querySelectorAll("#" + this.container + " .field-button").forEach(function(element) {
+        element.addEventListener("click", function(e) {
+          queryButton.focus();
+        });
+      });
+      document.querySelectorAll("#" + this.container + " .expression-operator-button").forEach(function(element) {
+        element.addEventListener("click", function(e) {
+          queryButton.focus();
+        });
+      });
+      document.querySelectorAll("#" + this.container + " .field-value-button").forEach(function(element) {
+        element.addEventListener("click", function(e) {
+          queryButton.focus();
+        });
+      });
+      document.querySelectorAll("#" + this.container + " .conjunction-operator-button").forEach(function(element) {
+        element.addEventListener("click", function(e) {
+          queryButton.focus();
+        });
+      });
+      queryButton.addEventListener("focus", function(e) {
+        __this.__addQueryItem();
+      });
+      queryButton.addEventListener("keydown", function(e) {
+        switch(e.code) {
+          case "Backspace":
+            __this.__state.removeLatestBlock();
+            __this.draw();
+            document.querySelector("#" + __this.container + " .query-button").focus();
+            break;
+          default:
+            break;
+        }
+      }, {passive:true});
+      queryButton.addEventListener("blur", function(e) {
+        document.querySelector("#" + __this.container + " .query-button").innerHTML = "";
+      });
+    }
+    this.initialized = true;
+  }, __addQueryItem:function() {
+    var __this = this;
+    var type = this.__state.nextElementType();
+    var queryContainer = document.querySelector("#" + this.container + " .query-button");
+    queryContainer.innerHTML = "";
+    switch(type) {
+      case "conjunction":
+        var dropdown = this.__theme.createDropdownElement(sogqb.config.conjunctionOperators, function(e) {
+          __this.__state.add({type:"conjunction", operator:e.target.getAttribute("data-value"), status:"complete"});
+          __this.draw();
+        }, true);
+        queryContainer.appendChild(dropdown);
+        break;
+      case "field":
+        var columns = this.__scheme.getEntityColumnsList(this.__entity);
+        var dropdown = this.__theme.createDropdownElement(columns, function(e) {
+          __this.__state.add({type:"expression", field:e.target.getAttribute("data-value"), value:null, operator:null, status:"field"}, false);
+          __this.draw();
+        }, true);
+        queryContainer.appendChild(dropdown);
+        break;
+      case "operator":
+        var block = this.__state.latestBlock();
+        var type = this.__scheme.getEntityFieldType(block.field);
+        var list = sogqb.operatorsList(type);
+        var dropdown = this.__theme.createDropdownElement(list, function(e) {
+          var block = __this.__state.latestBlock();
+          block.operator = e.target.getAttribute("data-value");
+          block.status = "operator";
+          __this.draw();
+        }, true);
+        queryContainer.appendChild(dropdown);
+        break;
+      case "value":
+        var block = this.__state.latestBlock();
+        var type = this.__scheme.getEntityFieldType(block.field);
+        switch(type) {
+          case "entity":
+            var data = this.__scheme.getEntityFieldValueList(block.field);
+            var dropdown = this.__theme.createDropdownElement(data, function(e) {
+              var block = __this.__state.latestBlock();
+              block.value = __this.__scheme.getEntityFieldFormattedValue(block.field, e.target.getAttribute("data-value"));
+              block.status = "completed";
+              __this.draw();
+            }, true);
+            queryContainer.appendChild(dropdown);
+            break;
+        }break;
+    }
   }});
   return {Application:Application};
 }());
@@ -482,6 +718,8 @@ Object.assign(sogqb, function() {
     return '<div class="query" contentEditable=true data-text="Searching Filter"></div>';
   }}, searchButton:{get:function() {
     return '<button class="search"><i class="zmdi zmdi-search"></i></button>';
+  }}, saveButton:{get:function() {
+    return '<button class="search"><i class="zmdi zmdi-attachment-alt"></i></button>';
   }}, clearButton:{get:function() {
     return '<button class="clear"><i class="zmdi zmdi-close"></i></button>';
   }}, fieldButton:{get:function() {
@@ -494,6 +732,41 @@ Object.assign(sogqb, function() {
     return '<button class="bgm-black" data-value="%%value%%">%%label%%</button>';
   }}});
   Object.assign(MaterialTheme.prototype, {__draw:function() {
+  }, createDropdownElement:function(list, listener, open) {
+    list = list || [];
+    listener = listener || function(e) {
+    };
+    open = open || false;
+    var dropdown = document.createElement("div");
+    dropdown.setAttribute("contenteditable", false);
+    dropdown.classList.add("dropdown");
+    var button = document.createElement("button");
+    button.setAttribute("type", "button");
+    button.setAttribute("class", "btn btn-link btn-super-sm waves-effect");
+    button.setAttribute("data-toggle", "dropdown");
+    button.setAttribute("contenteditable", false);
+    button.appendChild(document.createTextNode(" "));
+    var ul = document.createElement("ul");
+    ul.setAttribute("class", "dropdown-menu pull-left");
+    for (var i = 0; i < list.length; i++) {
+      var li = document.createElement("li");
+      var a = document.createElement("a");
+      a.setAttribute("href", "#");
+      a.setAttribute("contenteditable", false);
+      a.setAttribute("data-value", list[i].key);
+      a.addEventListener("click", listener);
+      a.appendChild(document.createTextNode(list[i].label));
+      li.appendChild(a);
+      ul.appendChild(li);
+    }
+    dropdown.appendChild(button);
+    dropdown.appendChild(ul);
+    if (false !== open) {
+      setTimeout(function() {
+        dropdown.classList.add("open");
+      }, 100);
+    }
+    return dropdown;
   }});
   return {MaterialTheme:MaterialTheme};
 }());

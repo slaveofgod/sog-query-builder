@@ -60,10 +60,36 @@ var sogqb = {
                 key: 'and',
                 label: 'And'
             }
-        ]
+        ],
+        operators: {
+            entity: [
+                'equal',
+                'not_equal'
+            ]
+        }
     },
     common: { },
     themes: { },
+
+    operatorsList: function (type) {
+        var operators = this.config.operators[type];
+        var list = [];
+
+        for (var i = 0; i < operators.length; i ++) {
+            for (var j = 0; j < this.config.expressionOperators.length; j ++) {
+                if (operators[i] === this.config.expressionOperators[j].key) {
+                    list.push({
+                        key: this.config.expressionOperators[j].key,
+                        label: this.config.expressionOperators[j].label
+                    });
+
+                    break;
+                }
+            }
+        }
+
+        return list;
+    },
 
     /**
      * @function
@@ -174,6 +200,21 @@ var sogqb = {
         }
 
         return true;
+    },
+
+    /**
+     * @private
+     * @function
+     * @name sogqb.__createHtmlElementFromString
+     * @param {String} string Html string.
+     * @description
+     * <p>Create html element from string.</p>
+     * @returns {ChildNode}
+     */
+    __createHtmlElementFromString: function (string) {
+        var template = document.createElement('template');
+        template.innerHTML = string;
+        return template.content.firstChild;
     }
 };
 

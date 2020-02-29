@@ -76,6 +76,11 @@ Object.assign(sogqb, function () {
                 return '<button class="search"><i class="zmdi zmdi-search"></i></button>'
             }
         },
+        saveButton: {
+            get: function () {
+                return '<button class="search"><i class="zmdi zmdi-attachment-alt"></i></button>'
+            }
+        },
         clearButton: {
             get: function () {
                 return '<button class="clear"><i class="zmdi zmdi-close"></i></button>'
@@ -111,7 +116,54 @@ Object.assign(sogqb, function () {
          * @description
          * <p>Draw query search container.</p>
          */
-        __draw: function () { }
+        __draw: function () { },
+
+        /**
+         *
+         */
+        createDropdownElement: function (list, listener, open) {
+            list = list || [];
+            listener = listener || function (e) {};
+            open = open || false;
+
+            var dropdown = document.createElement("div");
+            dropdown.setAttribute('contenteditable', false);
+            dropdown.classList.add('dropdown');
+
+            var button = document.createElement("button");
+            button.setAttribute('type', 'button');
+            button.setAttribute('class', 'btn btn-link btn-super-sm waves-effect');
+            button.setAttribute('data-toggle', 'dropdown');
+            button.setAttribute('contenteditable', false);
+            button.appendChild(document.createTextNode(" "));
+
+            var ul = document.createElement("ul");
+            ul.setAttribute('class', 'dropdown-menu pull-left');
+
+            for (var i = 0; i < list.length; i ++) {
+                var li = document.createElement("li");
+                var a = document.createElement("a");
+                a.setAttribute('href', '#');
+                a.setAttribute('contenteditable', false);
+                a.setAttribute('data-value', list[i].key);
+                a.addEventListener('click', listener);
+                a.appendChild(document.createTextNode(list[i].label));
+
+                li.appendChild(a);
+                ul.appendChild(li);
+            }
+
+            dropdown.appendChild(button);
+            dropdown.appendChild(ul);
+
+            if (false !== open) {
+                setTimeout(function () {
+                    dropdown.classList.add('open');
+                }, 100);
+            }
+
+            return dropdown;
+        }
     });
 
     return {
